@@ -2,18 +2,21 @@
 #include <vector>
 #include <ctime>
 #include <optional>
+#include <regex>
+#include <unordered_map>
+#include <string>
 
 class WoodCode
 {
 public:
-    WoodCode(std::string key)
+    WoodCode(std::string keys, std::string values)
     {
-        initKeyArrays(key); // converts the key string to a vector of integers
+        initCharMap(keys, values); // converts the 2 strings into a charMap
     }
 
     std::string encode(std::string input)
     {
-        auto result = checkInput(input);                        // checkInput() -> checks if the input contains valid chars
+        auto result = checkInput(input); // checkInput() -> checks if the input contains valid chars
         if (result)
         {
             std::cerr << "Invalid input: '" << *result << "' is not a valid character" << std::endl;
@@ -27,14 +30,20 @@ public:
     }
 
 private:
-    std::vector<int> keyArray;
-    std::vector<int> specialKeyArray;
+    std::unordered_map<char, int> charMap;
 
-    std::optional<char> checkInput(std::string& input)
+    std::optional<char> checkInput(std::string &input)
     {
         // Use regex to check if the input contains only valid characters
         // If valid, return std::nullopt
         // If not valid, return the invalid char
+        std::regex invalidChars("[^a-zA-Z0-9,.!?@ ]");
+
+        std::smatch match;
+        if (std::regex_search(input, match, invalidChars))
+        {
+            return match.str()[0]; // Return the first invalid character found
+        }
         return std::nullopt;
     }
 
@@ -50,7 +59,7 @@ private:
         return outputDate;
     }
 
-    int getDateOffset(std::string& date)
+    int getDateOffset(std::string &date)
     {
         int month = std::stoi(date.substr(0, 2));
         int day = std::stoi(date.substr(2, 2));
@@ -61,31 +70,108 @@ private:
         return offset;
     }
 
-    std::string encodeData(std::string& input, int& dateOffset)
+    std::string encodeData(std::string &input, int &dateOffset)
     {
         std::string encodedString = "";
-        // Loop through each character in the input string {
 
-        // If it's a letter, get it's value based on the keyArray (i.e. A=keyArray[0], B=keyArray[1], etc.)
-        // If it's lowercase, add 100
+        // Loop through each character in the input string
+        for (int i = 0; i < input.length(); i++)
+        {
+            char currentChar = input[i];
+            int value = 0;
+            std::string valueString;
 
-        // If it's a number, check the previous and next characters
-        // If prev = letter and next = letter, add 200
-        // If prev = letter and next = num, combine the current and next, and add 200, skip next char (i++)
-        // If prev = num and next = num, combine the current and next, and add 300, skip next char (i++)
-        // If prev = num and next = letter, add 400
+            // If it's a letter, get it's value based on the keyArray (i.e. A=keyArray[0], B=keyArray[1], etc.)
+            if (std::isalpha(currentChar))
+            {
+                value = charMap[std::toupper(currentChar)];
 
-        // If it's a special character, get it's value based on the specialKeyArray and add 500
+                if (std::islower(currentChar))
+                {
+                    value += 100; // If it's lowercase, add 100
+                }
+            }
+            else if (std::isdigit(currentChar))
+            {
+                // If it's a number, check the previous and next characters
+                char prev;
+                char next;
+                if (i == 0)
+                {
+                    prev = 'a'; // If it's the first char, the prev was not a number
+                }
+                else
+                {
+                    prev = input[i - 1];
+                }
 
-        // Add dateOffset
-        // Format to a 3 digit string
+                if (i == input.length() - 1)
+                {
+                    next = 'a'; // If it's the last char, the next is not a number
+                }
+                else
+                {
+                    next = input[i + 1];
+                }
 
-        // Add to the encodedString
-        // } end loop
+                if (!std::isdigit(prev))
+                {
+                    if (!std::isdigit(next))
+                    {
+                        value = (currentChar - '0') + 200; // If prev = !num and next = !num, add 200
+                    }
+                    else
+                    {
+                        // If prev = !num and next = num, combine the current and next, and add 200, skip next char (i++)
+                        value = (currentChar - '0') * 10 + (next - '0'); // 1 * 10 + 2 = 12
+                        value += 200;
+                        i++;
+                    }
+                }
+                else
+                {
+                    if (std::isdigit(next))
+                    {
+                        // If prev = num and next = num, combine the current and next, and add 300, skip next char (i++)
+                        value = (currentChar - '0') * 10 + (next - '0'); // 1 * 10 + 2 = 12
+                        value += 300;
+                        i++;
+                    }
+                    else
+                    {
+                        // If prev = num and next = !num, add 400
+                        value = (currentChar - '0') + 400;
+                    }
+                }
+            }
+            else
+            {
+                // If it's a special character, get it's value based on the charMap and add 500
+                value = charMap[currentChar] + 500;
+            }
+
+            // Add dateOffset
+            value += dateOffset;
+
+            // Format to a 3 digit string
+            valueString = std::to_string(value);
+            if (valueString.length() > 3)
+            {
+                std::cerr << "Value exceeds 3 digits: " << valueString << std::endl;
+                return "";
+            }
+
+            while (valueString.length() < 3)
+            {
+                valueString = "0" + valueString; // Pad with zeros to ensure 3 digits
+            }
+
+            // Add to the encodedString
+            encodedString += valueString;
+        }
 
         // Return the encodedString
-        
-        return "123"; // Placeholder for encoded data based on input and dateOffset
+        return encodedString;
     }
 
     int convertToBase(int num, int base)
@@ -101,36 +187,45 @@ private:
         return std::stoi(result);
     }
 
-    void initKeyArrays(const std::string& key)
+    void initCharMap(const std::string &keys, const std::string &values)
     {
-        if (key.length() != 52 && key.length() != 64)
+        if (keys.length() != 26 && keys.length() != 32)
         {
-            std::cerr << "Key must be 52 or 64 characters long." << std::endl;
+            std::cerr << "Key must be 26 or 32 characters long." << std::endl;
             return;
         }
 
-        keyArray.clear();
-        for (int i = 0; i < 52; i += 2)
+        charMap.clear();
+        for (int i = 0; i < 26; i++)
         {
-            int value = std::stoi(key.substr(i, 2));
-            keyArray.push_back(value);
+            char keyChar = keys[i];
+            int value = std::stoi(values.substr(i * 2, 2));
+            charMap[keyChar] = value;
         }
 
-        if (key.length() == 52) { return; }
-
-        specialKeyArray.clear();
-        for (int i = 52; i < key.length(); i += 2)
+        if (keys.length() == 26)
         {
-            int value = std::stoi(key.substr(i, 2));
-            specialKeyArray.push_back(value);
+            return;
+        }
+
+        for (int i = 26; i < keys.length(); i++)
+        {
+            char keyChar = keys[i];
+            int value = std::stoi(values.substr(i * 2, 2));
+            charMap[keyChar] = value;
         }
     }
 };
 
 int main()
 {
-    WoodCode woodCode("0003061215212430330104101316222531340205111420232632000102030405");
-    std::string encodedString = woodCode.encode("Test");
+    WoodCode woodCode("ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!?@ ", "0003061215212430330104101316222531340205111420232632000102030405");
+    std::string encodedString = woodCode.encode("Hello");
+    if (encodedString.empty())
+    {
+        std::cerr << "Encoding failed due to invalid input." << std::endl;
+        return 1;
+    }
     std::cout << encodedString << std::endl;
     return 0;
 }
