@@ -8,7 +8,8 @@ class WoodCode
 {
 public:
     // Constructor
-    WoodCode(std::string keys, std::string values);
+    WoodCode(std::string keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!? '\"/\\-_+:*@#$%&",
+             std::string values = "000306121521243033010410131622253134020511142023263200010203040506070809101112131415161718");
 
     bool initialized = false;
 
