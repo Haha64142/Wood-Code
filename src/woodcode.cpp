@@ -31,18 +31,26 @@ std::string WoodCode::encode(std::string input)
 
 std::string WoodCode::decode(std::string input)
 {
-    std::string version = input.substr(0, 6); // W10305
-    if (version != "W10305")
+    std::string header = input.substr(0, 6); // W10305
+    if (header != "W10305")
     {
-        if (version == "W10304")
+        int version = std::stoi(header.substr(1, 5));
+        if (version < 10305)
         {
             std::cerr << std::endl
-                      << version << " is deprecated, please use WoodCode v1.3.5 or download an older decoder" << std::endl;
+                      << "Version: v" << header.substr(1, 2) << "." << header.substr(3, 2) << "." << header.substr(5, 2)
+                      << " is too old, please use WoodCode v1.3.5 or download an older decoder" << std::endl;
             return "";
+        }
+        if (version > 10305)
+        {
+            std::cerr << std::endl
+                      << "Version: v" << header.substr(1, 2) << "." << header.substr(3, 2) << "." << header.substr(5, 2)
+                      << " is not supported, please use WoodCode v1.3.5 or download the appropriate decoder" << std::endl;
         }
 
         std::cerr << std::endl
-                  << "Invalid version: " << version << std::endl;
+                  << "Invalid header: " << header << std::endl;
         return "";
     }
 
