@@ -21,7 +21,8 @@ int main()
 
     std::cout << "Welcome to WoodCode v1.3.5" << std::endl
               << "This is a simple encoding/decoding tool." << std::endl
-              << "You can encode or decode text using a custom character map." << std::endl
+              << "You can encode or decode text using a cipher created by Haha64142." << std::endl
+              << "View the source code at https://github.com/Haha64142/Wood-Code" << std::endl
               << "Type 'h' for help, 'e' to encode, 'd' to decode, or 'q' to quit." << std::endl
               << std::endl
               << std::endl;
@@ -86,6 +87,8 @@ int main()
         case 'H':
             std::cout << std::endl
                       << "Help Menu:" << std::endl
+                      << "View the source code at https://github.com/Haha64142/Wood-Code" << std::endl
+                      << std::endl
                       << "Type 'e' to encode text." << std::endl
                       << "Valid characters for encoding are: " << woodCode.getValidChars() << std::endl
                       << std::endl
