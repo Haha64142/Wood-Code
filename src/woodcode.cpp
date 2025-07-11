@@ -10,7 +10,8 @@
 
 WoodCode::WoodCode(std::string keys, std::string values)
 {
-    initCharMap(keys, values); // converts the 2 strings into a charMap
+    // converts the 2 strings into a charMap
+    initialized = initCharMap(keys, values); // initCharMap() -> returns true if successful
 }
 
 std::string WoodCode::encode(std::string input)
@@ -58,17 +59,33 @@ std::string WoodCode::decode(std::string input)
 
 std::optional<char> WoodCode::checkInput(std::string &input)
 {
+    // Get the a string of valid special characters
+    std::string validSpecialChars = "";
+    for (const auto &pair : specialCharMap)
+    {
+        validSpecialChars += pair.first;
+    }
+
     // Use regex to check if the input contains only valid characters
-    // If valid, return std::nullopt
-    // If not valid, return the invalid char
-    std::regex invalidChars("[^a-zA-Z0-9,.!?@ ]");
+    std::regex invalidChars("[^a-zA-Z0-9" + validSpecialChars + "]");
 
     std::smatch match;
     if (std::regex_search(input, match, invalidChars))
     {
         return match.str()[0]; // Return the first invalid character found
     }
-    return std::nullopt;
+    return std::nullopt; // If valid, return std::nullopt
+}
+
+std::string WoodCode::getValidChars()
+{
+    std::string validChars = "a-z, A-Z, 0-9, and special characters: '";
+    for (const auto &pair : specialCharMap)
+    {
+        validChars += pair.first; // Add special chars
+    }
+    validChars += "'";
+    return validChars;
 }
 
 std::string WoodCode::getDate()
@@ -264,12 +281,28 @@ int WoodCode::convertToBase(int num, int base)
     return std::stoi(result);
 }
 
-void WoodCode::initCharMap(const std::string &keys, const std::string &values)
+bool WoodCode::initCharMap(const std::string &keys, const std::string &values)
 {
-    if (keys.length() != 26 && keys.length() != 32)
+    if (keys.length() != 26 && keys.length() < 26)
     {
-        std::cerr << "Key must be 26 or 32 characters long." << std::endl;
-        return;
+        std::cerr << "Key must be 26 characters or longer." << std::endl
+                  << "Error initializing character map." << std::endl
+                  << std::endl;
+        return false;
+    }
+    if (values.length() % 2 != 0)
+    {
+        std::cerr << "Values must be an even number of characters." << std::endl
+                  << "Error initializing character map." << std::endl
+                  << std::endl;
+        return false;
+    }
+    if (values.length() != keys.length() * 2)
+    {
+        std::cerr << "Values must be twice the length of keys." << std::endl
+                  << "Error initializing character map." << std::endl
+                  << std::endl;
+        return false;
     }
 
     charMap.clear();
@@ -283,7 +316,7 @@ void WoodCode::initCharMap(const std::string &keys, const std::string &values)
 
     if (keys.length() == 26)
     {
-        return;
+        return true;
     }
 
     for (int i = 26; i < keys.length(); i++)
@@ -293,4 +326,5 @@ void WoodCode::initCharMap(const std::string &keys, const std::string &values)
         specialCharMap[keyChar] = value;
         specialReverseMap[value] = keyChar;
     }
+    return true;
 }

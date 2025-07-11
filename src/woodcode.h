@@ -10,11 +10,16 @@ public:
     // Constructor
     WoodCode(std::string keys, std::string values);
 
+    bool initialized = false;
+
     // Public encode function
     std::string encode(std::string input);
 
     // Public decode function
     std::string decode(std::string input);
+
+    // Returns a string of valid characters (For the help menu)
+    std::string getValidChars();
 
 private:
     std::unordered_map<char, int> charMap;
@@ -42,5 +47,5 @@ private:
     int convertToBase(int num, int base);
 
     // Initializes the character map from key and value strings
-    void initCharMap(const std::string &keys, const std::string &values);
+    bool initCharMap(const std::string &keys, const std::string &values);
 };

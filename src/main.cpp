@@ -8,13 +8,30 @@ int main()
     bool exit = false;
 
     WoodCode woodCode("ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!?@ ", "0003061215212430330104101316222531340205111420232632000102030405");
+    if (!woodCode.initialized)
+    {
+        std::cerr << "Error initializing WoodCode. Please download the latest version" << std::endl;
+        std::cerr << "or submit a bug report at https://github.com/Haha64142/Wood-Code/issues" << std::endl;
+
+        std::cout << std::endl
+                  << "Press Enter to exit...";
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return 1;
+    }
+
+    std::cout << "Welcome to WoodCode v1.3.5" << std::endl
+              << "This is a simple encoding/decoding tool." << std::endl
+              << "You can encode or decode text using a custom character map." << std::endl
+              << "Type 'h' for help, 'e' to encode, 'd' to decode, or 'q' to quit." << std::endl
+              << std::endl
+              << std::endl;
 
     while (!exit)
     {
         std::string result;
         std::string input;
 
-        std::cout << "Would you like to Encode [e], Decode [d], or Quit [q]? ";
+        std::cout << "Would you like to Encode [e], Decode [d], Help [h], or Quit [q]? ";
         char option;
         option = std::cin.get();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the input buffer
@@ -36,8 +53,7 @@ int main()
             else
             {
                 std::cout << std::endl
-                          << "Encoded text: '" << result << "'"
-                          << std::endl
+                          << "Encoded text: " << result << std::endl
                           << std::endl;
             }
             break;
@@ -56,11 +72,27 @@ int main()
             }
             else
             {
+                if (std::isspace(result.front()) || std::isspace(result.back()))
+                {
+                    result = "'" + result + "'";
+                }
                 std::cout << std::endl
-                          << "Decoded text: '" << result << "'"
-                          << std::endl
+                          << "Decoded text: " << result << std::endl
                           << std::endl;
             }
+            break;
+
+        case 'h':
+        case 'H':
+            std::cout << std::endl
+                      << "Help Menu:" << std::endl
+                      << "Type 'e' to encode text." << std::endl
+                      << "Valid characters for encoding are: " << woodCode.getValidChars() << std::endl
+                      << std::endl
+                      << "Type 'd' to decode text." << std::endl
+                      << "Type 'h' for this help menu." << std::endl
+                      << "Type 'q' to quit the program." << std::endl
+                      << std::endl;
             break;
 
         case 'q':
