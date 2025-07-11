@@ -7,7 +7,7 @@ int main()
 {
     bool exit = false;
 
-    WoodCode woodCode("ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!?@ ", "0003061215212430330104101316222531340205111420232632000102030405");
+    WoodCode woodCode("ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!?@ $/:;'\\\"()%-", "00030612152124303301041013162225313402051114202326320001020304050610111213141516202122");
     if (!woodCode.initialized)
     {
         std::cerr << "Error initializing WoodCode. Please download the latest version" << std::endl;

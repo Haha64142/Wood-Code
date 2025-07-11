@@ -4,7 +4,6 @@
 #include <vector>
 #include <ctime>
 #include <optional>
-#include <regex>
 #include <unordered_map>
 #include <string>
 
@@ -59,20 +58,13 @@ std::string WoodCode::decode(std::string input)
 
 std::optional<char> WoodCode::checkInput(std::string &input)
 {
-    // Get the a string of valid special characters
-    std::string validSpecialChars = "";
-    for (const auto &pair : specialCharMap)
+    // Replace regex with a simple loop to check for valid characters
+    for (char &c : input)
     {
-        validSpecialChars += pair.first;
-    }
-
-    // Use regex to check if the input contains only valid characters
-    std::regex invalidChars("[^a-zA-Z0-9" + validSpecialChars + "]");
-
-    std::smatch match;
-    if (std::regex_search(input, match, invalidChars))
-    {
-        return match.str()[0]; // Return the first invalid character found
+        if (!std::isalnum(c) && specialCharMap.find(c) == specialCharMap.end())
+        {
+            return c; // Return the first invalid character
+        }
     }
     return std::nullopt; // If valid, return std::nullopt
 }
