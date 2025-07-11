@@ -31,10 +31,16 @@ std::string WoodCode::encode(std::string input)
 
 std::string WoodCode::decode(std::string input)
 {
-    std::string version = input.substr(0, 6); // W10304
-    if (version != "W10304")
+    std::string header = input.substr(0, 6); // W10304
+    if (header != "W10304")
     {
-        std::cerr << "Invalid version: " << version << std::endl;
+        int version = std::stoi(header.substr(1, 5));
+        if (version != 10304)
+        {
+            std::cerr << "This decoder only supports version WoodCode v1.3.4. Please download the appropriate decoder." << std::endl;
+            return "";
+        }
+        std::cerr << "Invalid header: " << header << std::endl;
         return "";
     }
 
