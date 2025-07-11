@@ -3,27 +3,6 @@
 #include <string>
 #include "woodcode.h"
 
-// enum ExitCode
-// {
-//     NoExit = 0,
-//     Success = 1,
-//     Error = 2,
-// };
-
-// ExitCode askToExit(ExitCode exitCode = Success)
-// {
-//     char input;
-
-//     std::cout << "Press Enter to continue or Q to quit...";
-//     std::cin.get(input);
-
-//     if (input == 'Q' || input == 'q')
-//     {
-//         return exitCode;
-//     }
-//     return NoExit;
-// }
-
 int main()
 {
     bool exit = false;
@@ -35,8 +14,7 @@ int main()
         std::string result;
         std::string input;
 
-        std::cout << std::endl
-                  << "Would you like to Encode [e], Decode [d], or Quit [q]? ";
+        std::cout << "Would you like to Encode [e], Decode [d], or Quit [q]? ";
         char option;
         option = std::cin.get();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the input buffer
@@ -59,6 +37,7 @@ int main()
             {
                 std::cout << std::endl
                           << "Encoded text: '" << result << "'"
+                          << std::endl
                           << std::endl;
             }
             break;
@@ -79,6 +58,7 @@ int main()
             {
                 std::cout << std::endl
                           << "Decoded text: '" << result << "'"
+                          << std::endl
                           << std::endl;
             }
             break;
@@ -90,7 +70,8 @@ int main()
 
         default:
             std::cerr << std::endl
-                      << "Invalid Option" << std::endl;
+                      << "Invalid Option" << std::endl
+                      << std::endl;
             continue;
         }
     }

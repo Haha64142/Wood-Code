@@ -26,15 +26,23 @@ std::string WoodCode::encode(std::string input)
     int dateOffset = getDateOffset(date);                    // getDateOffset() -> returns a number based on the current date
     std::string encodedData = encodeData(input, dateOffset); // encodeData() -> return a string with the encoded data
 
-    return "W10304" + encodedData + date;
+    return "W10305" + encodedData + date;
 }
 
 std::string WoodCode::decode(std::string input)
 {
-    std::string version = input.substr(0, 6); // W10304
-    if (version != "W10304")
+    std::string version = input.substr(0, 6); // W10305
+    if (version != "W10305")
     {
-        std::cerr << "Invalid version: " << version << std::endl;
+        if (version == "W10304")
+        {
+            std::cerr << std::endl
+                      << version << " is deprecated, please use WoodCode v1.3.5 or download an older decoder" << std::endl;
+            return "";
+        }
+
+        std::cerr << std::endl
+                  << "Invalid version: " << version << std::endl;
         return "";
     }
 
@@ -109,18 +117,8 @@ std::string WoodCode::encodeData(std::string &input, int &dateOffset)
         }
         else if (std::isdigit(currentChar))
         {
-            // If it's a number, check the previous and next characters
-            char prev;
+            // If it's a number, check the next character
             char next;
-            if (i == 0)
-            {
-                prev = 'a'; // If it's the first char, the prev was not a number
-            }
-            else
-            {
-                prev = input[i - 1];
-            }
-
             if (i == input.length() - 1)
             {
                 next = 'a'; // If it's the last char, the next is not a number
@@ -130,40 +128,23 @@ std::string WoodCode::encodeData(std::string &input, int &dateOffset)
                 next = input[i + 1];
             }
 
-            if (!std::isdigit(prev))
+            if (std::isdigit(next))
             {
-                if (!std::isdigit(next))
-                {
-                    value = (currentChar - '0') + 200; // If prev = !num and next = !num, add 200
-                }
-                else
-                {
-                    // If prev = !num and next = num, combine the current and next, and add 200, skip next char (i++)
-                    value = (currentChar - '0') * 10 + (next - '0'); // 1 * 10 + 2 = 12
-                    value += 200;
-                    i++;
-                }
+                // If next = num, combine the current and next, and add 200, skip next char (i++)
+                value = (currentChar - '0') * 10 + (next - '0'); // 1 * 10 + 2 = 12
+                value += 200;
+                i++;
             }
             else
             {
-                if (std::isdigit(next))
-                {
-                    // If prev = num and next = num, combine the current and next, and add 300, skip next char (i++)
-                    value = (currentChar - '0') * 10 + (next - '0'); // 1 * 10 + 2 = 12
-                    value += 300;
-                    i++;
-                }
-                else
-                {
-                    // If prev = num and next = !num, add 400
-                    value = (currentChar - '0') + 400;
-                }
+                // If next = !num, add 300
+                value = (currentChar - '0') + 300;
             }
         }
         else
         {
-            // If it's a special character, get it's value based on the specialCharMap and add 500
-            value = specialCharMap[currentChar] + 500;
+            // If it's a special character, get it's value based on the specialCharMap and add 400
+            value = specialCharMap[currentChar] + 400;
         }
 
         // Add dateOffset
@@ -206,6 +187,12 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset)
     for (int &value : inputChunks)
     {
         value -= dateOffset;
+        if (value < 0 || value > 499)
+        {
+            std::cerr << std::endl
+                      << "Invalid value after date offset: " << value << std::endl;
+            return "";
+        }
     }
 
     std::string decodedString = "";
@@ -213,10 +200,9 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset)
     // Loop through each value in inputChunks
     for (int &chunk : inputChunks)
     {
-        // Get first digit, then remove it (172 -> firstDigit = 1, value = "72")
+        // Get first digit, then remove it (172 -> firstDigit = 1, value = 72)
         int firstDigit = chunk / 100;
-        int value = chunk % 100;                                      // 203 -> 3
-        std::string valueString = std::to_string(chunk).substr(1, 2); // 203 -> "03"
+        int value = chunk % 100; // 203 -> 3
 
         std::string decodedChunk;
 
@@ -235,21 +221,24 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset)
 
         // If it's 2, it's a number
         case 2:
-            decodedChunk = valueString;
+            // Convert value to a 2-digit string
+            if (value < 10)
+            {
+                decodedChunk = "0" + std::to_string(value); // Pad with zero if single digit
+            }
+            else
+            {
+                decodedChunk = std::to_string(value);
+            }
             break;
 
-        // If it's 3, it's a number
+        // If it's 3, the second digit is a number
         case 3:
-            decodedChunk = valueString;
-            break;
-
-        // If it's 4, the second digit is a number
-        case 4:
             decodedChunk = std::to_string(value % 10);
             break;
 
-        // If it's 5, get it's char based on the specialReverseMap
-        case 5:
+        // If it's 4, get it's char based on the specialReverseMap
+        case 4:
             decodedChunk = specialReverseMap[value];
             break;
         }
