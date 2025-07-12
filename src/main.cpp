@@ -1,6 +1,7 @@
 #include <iostream>
 #include <limits>
 #include <string>
+
 #include "woodcode.h"
 
 int main()
@@ -20,8 +21,7 @@ int main()
     }
 
     std::cout << "Welcome to WoodCode v1.3.5" << std::endl
-              << "This is a simple encoding/decoding tool." << std::endl
-              << "You can encode or decode text using a cipher created by Haha64142." << std::endl
+              << "This is a simple encoding/decoding tool created by Haha64142." << std::endl
               << "View the source code at https://github.com/Haha64142/Wood-Code" << std::endl
               << "Type 'h' for help, 'e' to encode, 'd' to decode, or 'q' to quit." << std::endl
               << std::endl
