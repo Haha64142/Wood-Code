@@ -34,6 +34,12 @@ std::string WoodCode::decode(std::string input)
     std::string header = input.substr(0, 6); // W10305
     if (header != "W10305")
     {
+        if (!(std::isalpha(header.front()) && std::isdigit(header.at(1)) && std::isdigit(header.at(2)) && std::isdigit(header.at(3)) && std::isdigit(header.at(4)) && std::isdigit(header.at(5))))
+        {
+            std::cerr << std::endl
+                      << "Invalid header: " << header << std::endl;
+            return "";
+        }
         int version = std::stoi(header.substr(1, 5));
         if (version < 10305)
         {
