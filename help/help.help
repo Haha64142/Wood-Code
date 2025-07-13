@@ -1,0 +1,10 @@
+Usage: woodcode help
+       woodcode help <command>
+       woodcode all
+
+Display general information about the WoodCode CLI, or detailed help for a specific command.
+
+Arguments:
+  (none)          Show general help and available commands
+  <command>       Show help for the specified command
+  all             Print all help messages

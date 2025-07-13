@@ -1,0 +1,19 @@
+Usage: woodcode [options] <command> [<args>]
+
+If you prefer not to use the command line, you can run the WoodCodeApp executable named
+WoodCodeApp.exe or run the command 'woodcode app'.
+
+Commands:
+  app             Run the WoodCodeApp.exe if it exists
+  encode          Encode a string or the contents of a file
+  decode          Decode a string or the contents of a file
+  help            Show this help message and exit
+
+Options:
+  -h, --help      Show this help message and exit
+  -v, --version   Show version information
+
+Run 'woodcode help <command>' for help with a specific command,
+or 'woodcode help all' to print all help messages.
+
+Github: https://github.com/Haha64142/Wood-Code
