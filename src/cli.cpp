@@ -30,7 +30,7 @@ std::string readFile(const std::string &filename)
     std::ifstream file(filename);
     if (!file)
     {
-        std::cerr << "Failed to open file: " << filename << "\n";
+        std::cerr << "Failed to open file: " << filename << std::endl;
         return "";
     }
 
@@ -42,87 +42,47 @@ std::string readFile(const std::string &filename)
 
 void printHelp(Command command)
 {
+    std::string helpFile = "";
     switch (command)
     {
     case woodcode:
-        std::cout << std::endl
-                  << "Usage: woodcode [options] <command> [<args>]" << std::endl
-                  << std::endl
-                  << "If you prefer not to use the command line, you can run the WoodCodeApp executable named" << std::endl
-                  << "WoodCodeApp.exe or run the command 'woodcode app'." << std::endl
-                  << std::endl
-                  << "Commands:" << std::endl
-                  << "  app             Run the WoodCodeApp.exe if it exists" << std::endl
-                  << "  encode          Encode a string or the contents of a file" << std::endl
-                  << "  decode          Decode a string or the contents of a file" << std::endl
-                  << "  help            Show this help message and exit" << std::endl
-                  << std::endl
-                  << "Options:" << std::endl
-                  << "  -h, --help      Show this help message and exit" << std::endl
-                  << "  -v, --version   Show version information" << std::endl
-                  << std::endl
-                  << "Run 'woodcode help <command>' for help with a specific command," << std::endl
-                  << "or 'woodcode help all' to print all help messages." << std::endl
-                  << std::endl
-                  << "Github: https://github.com/Haha64142/Wood-Code" << std::endl;
+        helpFile = "help/woodcode.help";
         break;
 
     case App:
-        std::cout << std::endl
-                  << "Usage: woodcode app" << std::endl
-                  << std::endl
-                  << "Run WoodCodeApp.exe for users who prefer not to use the command line." << std::endl;
+        helpFile = "help/app.help";
         break;
 
     case Encode:
-        std::cout << std::endl
-                  << "Usage: woodcode encode <text>" << std::endl
-                  << "       woodcode encode [-f | --file] <file>" << std::endl
-                  << std::endl
-                  << "Encode a string into WoodCode v1.3.5." << std::endl
-                  << std::endl
-                  << "Arguments:" << std::endl
-                  << "  <text>               The text you want to encode" << std::endl
-                  << "  -f, --file <file>    Path to a file containing the text to encode" << std::endl
-                  << "                       The file must contain only one line of text" << std::endl
-                  << std::endl
-                  << "Use 'woodcode decode' to decode a WoodCode string." << std::endl;
+        helpFile = "help/encode.help";
         break;
 
     case Decode:
-        std::cout << std::endl
-                  << "Usage: woodcode decode <text>" << std::endl
-                  << "       woodcode decode [-f | --file] <file>" << std::endl
-                  << std::endl
-                  << "Decode a string using WoodCode v1.3.5." << std::endl
-                  << std::endl
-                  << "Arguments:" << std::endl
-                  << "  <text>               The WoodCode string you want to decode" << std::endl
-                  << "  -f, --file <file>    Path to a file containing the code to decode" << std::endl
-                  << "                       The file must contain only one line of text" << std::endl
-                  << std::endl
-                  << "Use 'woodcode encode' to encode text." << std::endl;
+        helpFile = "help/decode.help";
         break;
 
     case Help:
-        std::cout << std::endl
-                  << "Usage: woodcode help" << std::endl
-                  << "       woodcode help <command>" << std::endl
-                  << "       woodcode all" << std::endl
-                  << std::endl
-                  << "Display general information about the woodcode CLI, or detailed help for a specific command." << std::endl
-                  << std::endl
-                  << "Arguments:" << std::endl
-                  << "  (none)          Show general help and available commands" << std::endl
-                  << "  all             Print all help messages" << std::endl
-                  << "  <command>       Show help for the specified command" << std::endl;
+        helpFile = "help/help.help";
         break;
 
-    default: // It's not supposed to get here
+    default:
+        // It's not supposed to get here
         std::cerr << "Someone has goofed up and broken the printHelp() function." << std::endl
                   << "Please download the latest version," << std::endl
                   << "or submit a bug report at https://github.com/Haha64142/Wood-Code/issues" << std::endl;
+        return;
     }
+
+    std::string helpText = readFile(helpFile);
+    if (helpText.empty())
+    {
+        std::cerr << "Error: Failed to print help text." << std::endl
+                  << "Check that " << helpFile << " exists in the current directory." << std::endl;
+        return;
+    }
+
+    std::cout << std::endl
+              << helpText << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -253,13 +213,13 @@ int main(int argc, char *argv[])
         if (argc == 3)
         {
             input = argv[2];
-            if (input == "--file")
+            if (input == "--file" || input == "-f")
             {
                 std::cerr << "Error: You used option --file without specifying a file to use for decoding." << std::endl;
                 return 1;
             }
         }
-        else if (argc == 4 && std::string(argv[2]) == "--file")
+        else if (argc == 4 && (std::string(argv[2]) == "--file" || std::string(argv[2]) == "-f"))
         {
             input = readFile(argv[3]);
         }
@@ -302,7 +262,7 @@ int main(int argc, char *argv[])
     else
     {
         std::cerr << "Error: Unknown command '" << command << "'." << std::endl
-                  << "Use 'woodcode --help' for usage information." << std::endl;
+                  << "Use 'woodcode help' for usage information." << std::endl;
     }
 
     return 0;

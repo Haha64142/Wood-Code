@@ -1,0 +1,11 @@
+Usage: woodcode decode <text>
+       woodcode decode [-f | --file] <file>
+
+Decode a string using WoodCode v1.3.5.
+
+Arguments:
+  <text>               The WoodCode string you want to decode
+  -f, --file <file>    Path to a file containing the code to decode
+                       The file must contain only one line of text
+
+Use 'woodcode encode' to encode text.

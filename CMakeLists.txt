@@ -10,6 +10,11 @@ set(CPACK_PACKAGE_VERSION "1.3.5")
 set(CPACK_GENERATOR "ZIP;TGZ")
 include(CPack)
 
+# Set default build type to Debug if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+endif()
+
 add_library(woodcode_lib src/woodcode.cpp)
 target_include_directories(woodcode_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
@@ -24,3 +29,30 @@ add_executable("WoodCodeApp" src/main.cpp)
 target_link_libraries("WoodCodeApp" PRIVATE woodcode_lib)
 
 install(TARGETS WoodCodeApp)
+
+# Get help files
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/help")
+file(GLOB HELP_FILES "${PROJECT_SOURCE_DIR}/help/*.help")
+
+install(FILES ${HELP_FILES} DESTINATION help)
+
+# Choose behavior based on build type
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Creating symlinks for help files (Debug mode)")
+
+    foreach(help_file ${HELP_FILES})
+        get_filename_component(filename ${help_file} NAME)
+        set(dest "${CMAKE_CURRENT_BINARY_DIR}/help/${filename}")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${help_file} ${dest})
+    endforeach()
+else()
+    message(STATUS "Copying help files (Non-Debug mode)")
+
+    foreach(help_file ${HELP_FILES})
+        get_filename_component(filename ${help_file} NAME)
+        configure_file(${help_file}
+            "${CMAKE_CURRENT_BINARY_DIR}/help/${filename}"
+            COPYONLY)
+    endforeach()
+endif()
