@@ -6,6 +6,86 @@
 #include <optional>
 #include <unordered_map>
 #include <string>
+#include <sstream>
+#include <iomanip>
+
+// ================ WoodCodeUtils ================
+
+int WoodCodeUtils::convertToBase(int num, int base)
+{
+    std::string result = "";
+
+    while (num > 0)
+    {
+        int remainder = num % base;
+        result = std::to_string(remainder) + result;
+        num /= base;
+    }
+    return std::stoi(result);
+}
+
+std::string WoodCodeUtils::getDate()
+{
+    time_t now = time(0);
+    tm *localTime = localtime(&now);
+
+    char dateStr[7];
+    strftime(dateStr, 7, "%m%d%y", localTime);
+
+    std::string outputDate = dateStr;
+    return outputDate;
+}
+
+std::string WoodCodeUtils::escapeChar(char c)
+{
+    static const std::unordered_map<char, std::string> escapeTable = {
+        {'\n', "\\n"},
+        {'\t', "\\t"},
+        {'\r', "\\r"},
+        {'\v', "\\v"},
+        {'\f', "\\f"},
+        {'\a', "\\a"},
+        {'\b', "\\b"},
+        {'\0', "\\0"},
+        {'\'', "\\'"},
+        {'\"', "\\\""},
+        {'\\', "\\\\"},
+        {' ', "' ' (space)"}};
+
+    // Check if it's in the escape table
+    auto it = escapeTable.find(c);
+    if (it != escapeTable.end())
+    {
+        return it->second;
+    }
+
+    // If it's a printable ASCII character, return it as a string
+    if (std::isprint(static_cast<unsigned char>(c)))
+    {
+        return std::string(1, c);
+    }
+
+    // Fallback: print as hexadecimal (e.g., \x1b)
+    std::ostringstream oss;
+    oss << "\\x" << std::hex << std::setw(2) << std::setfill('0')
+        << static_cast<int>(static_cast<unsigned char>(c));
+    return oss.str();
+}
+
+std::string WoodCodeUtils::escapeString(const std::string &input)
+{
+    std::string result;
+    result.reserve(input.size() * 2); // optimization: avoids reallocs
+
+    for (char c : input)
+    {
+        result += escapeChar(c);
+    }
+
+    return result;
+}
+
+// ================ WoodCode ================
 
 WoodCode::WoodCode(std::string keys, std::string values)
 {
@@ -13,23 +93,23 @@ WoodCode::WoodCode(std::string keys, std::string values)
     initialized = initCharMap(keys, values); // initCharMap() -> returns true if successful
 }
 
-std::string WoodCode::encode(std::string input)
+std::string WoodCode::encode(std::string input) const
 {
     auto result = checkInput(input); // checkInput() -> checks if the input contains valid chars
     if (result)
     {
         std::cerr << std::endl
-                  << "Invalid input: '" << *result << "' is not a valid character" << std::endl;
+                  << "Invalid input: " << WoodCodeUtils::escapeChar(*result) << " is not a valid character" << std::endl;
         return "";
     }
-    std::string date = getDate();                            // getDate() -> returns current date in "MMDDYY" format
+    std::string date = WoodCodeUtils::getDate();             // getDate() -> returns current date in "MMDDYY" format
     int dateOffset = getDateOffset(date);                    // getDateOffset() -> returns a number based on the current date
     std::string encodedData = encodeData(input, dateOffset); // encodeData() -> return a string with the encoded data
 
     return "W10305" + encodedData + date;
 }
 
-std::string WoodCode::decode(std::string input)
+std::string WoodCode::decode(std::string input) const
 {
     std::string header = input.substr(0, 6); // W10305
     if (header != "W10305")
@@ -37,7 +117,7 @@ std::string WoodCode::decode(std::string input)
         if (!(std::isalpha(header.front()) && std::isdigit(header.at(1)) && std::isdigit(header.at(2)) && std::isdigit(header.at(3)) && std::isdigit(header.at(4)) && std::isdigit(header.at(5))))
         {
             std::cerr << std::endl
-                      << "Invalid header: " << header << std::endl;
+                      << "Invalid header: " << WoodCodeUtils::escapeString(header) << std::endl;
             return "";
         }
         int version = std::stoi(header.substr(1, 5));
@@ -56,7 +136,7 @@ std::string WoodCode::decode(std::string input)
         }
 
         std::cerr << std::endl
-                  << "Invalid header: " << header << std::endl;
+                  << "Invalid header: " << WoodCodeUtils::escapeString(header) << std::endl;
         return "";
     }
 
@@ -70,7 +150,7 @@ std::string WoodCode::decode(std::string input)
     return decodedData;
 }
 
-std::optional<char> WoodCode::checkInput(std::string &input)
+std::optional<char> WoodCode::checkInput(std::string &input) const
 {
     // Replace regex with a simple loop to check for valid characters
     for (char &c : input)
@@ -83,7 +163,7 @@ std::optional<char> WoodCode::checkInput(std::string &input)
     return std::nullopt; // If valid, return std::nullopt
 }
 
-std::string WoodCode::getValidChars()
+std::string WoodCode::getValidChars() const
 {
     std::string validChars = "a-z, A-Z, 0-9, and special characters: '";
     for (const auto &pair : specialCharMap)
@@ -94,44 +174,32 @@ std::string WoodCode::getValidChars()
     return validChars;
 }
 
-std::string WoodCode::getDate()
-{
-    time_t now = time(0);
-    tm *localTime = localtime(&now);
-
-    char dateStr[7];
-    strftime(dateStr, 7, "%m%d%y", localTime);
-
-    std::string outputDate = dateStr;
-    return outputDate;
-}
-
-int WoodCode::getDateOffset(std::string &date)
+int WoodCode::getDateOffset(std::string &date) const
 {
     int month = std::stoi(date.substr(0, 2));
     int day = std::stoi(date.substr(2, 2));
     int year = std::stoi(date.substr(4, 2));
 
     int sum = month + day + year;
-    int offset = convertToBase(sum, 7);
+    int offset = WoodCodeUtils::convertToBase(sum, 7);
     return offset;
 }
 
-std::string WoodCode::encodeData(std::string &input, int &dateOffset)
+std::string WoodCode::encodeData(std::string &input, int &dateOffset) const
 {
     std::string encodedString = "";
 
     // Loop through each character in the input string
     for (int i = 0; i < input.length(); i++)
     {
-        char currentChar = input[i];
+        char currentChar = input.at(i);
         int value = 0;
         std::string valueString;
 
         // If it's a letter, get it's value based on the keyArray (i.e. A=keyArray[0], B=keyArray[1], etc.)
         if (std::isalpha(currentChar))
         {
-            value = charMap[std::toupper(currentChar)];
+            value = charMap.at(std::toupper(currentChar));
 
             if (std::islower(currentChar))
             {
@@ -148,7 +216,7 @@ std::string WoodCode::encodeData(std::string &input, int &dateOffset)
             }
             else
             {
-                next = input[i + 1];
+                next = input.at(i + 1);
             }
 
             if (std::isdigit(next))
@@ -167,7 +235,7 @@ std::string WoodCode::encodeData(std::string &input, int &dateOffset)
         else
         {
             // If it's a special character, get it's value based on the specialCharMap and add 400
-            value = specialCharMap[currentChar] + 400;
+            value = specialCharMap.at(currentChar) + 400;
         }
 
         // Add dateOffset
@@ -194,7 +262,7 @@ std::string WoodCode::encodeData(std::string &input, int &dateOffset)
     return encodedString;
 }
 
-std::string WoodCode::decodeData(std::string &input, int &dateOffset)
+std::string WoodCode::decodeData(std::string &input, int &dateOffset) const
 {
     std::vector<int> inputChunks;
 
@@ -234,12 +302,12 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset)
         {
         // If it's 0, get it's char based on the reverseMap and convert to upper
         case 0:
-            decodedChunk = std::toupper(reverseMap[value]);
+            decodedChunk = std::toupper(reverseMap.at(value));
             break;
 
         // If it's 1, get it's char based on the reverseMap and convert to lower
         case 1:
-            decodedChunk = std::tolower(reverseMap[value]);
+            decodedChunk = std::tolower(reverseMap.at(value));
             break;
 
         // If it's 2, it's a number
@@ -262,7 +330,7 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset)
 
         // If it's 4, get it's char based on the specialReverseMap
         case 4:
-            decodedChunk = specialReverseMap[value];
+            decodedChunk = specialReverseMap.at(value);
             break;
         }
 
@@ -272,19 +340,6 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset)
 
     // Return the decodedString;
     return decodedString;
-}
-
-int WoodCode::convertToBase(int num, int base)
-{
-    std::string result = "";
-
-    while (num > 0)
-    {
-        int remainder = num % base;
-        result = std::to_string(remainder) + result;
-        num /= base;
-    }
-    return std::stoi(result);
 }
 
 bool WoodCode::initCharMap(const std::string &keys, const std::string &values)
@@ -314,7 +369,7 @@ bool WoodCode::initCharMap(const std::string &keys, const std::string &values)
     charMap.clear();
     for (int i = 0; i < 26; i++)
     {
-        char keyChar = keys[i];
+        char keyChar = keys.at(i);
         int value = std::stoi(values.substr(i * 2, 2));
         charMap[keyChar] = value;
         reverseMap[value] = keyChar;
@@ -327,7 +382,7 @@ bool WoodCode::initCharMap(const std::string &keys, const std::string &values)
 
     for (int i = 26; i < keys.length(); i++)
     {
-        char keyChar = keys[i];
+        char keyChar = keys.at(i);
         int value = std::stoi(values.substr(i * 2, 2));
         specialCharMap[keyChar] = value;
         specialReverseMap[value] = keyChar;
