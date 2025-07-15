@@ -38,13 +38,12 @@ install(FILES ${HELP_FILES} DESTINATION help)
 
 # Choose behavior based on build type
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "Creating symlinks for help files (Debug mode)")
+    message(STATUS "Creating links for help files (Debug mode)")
 
     foreach(help_file ${HELP_FILES})
         get_filename_component(filename ${help_file} NAME)
         set(dest "${CMAKE_CURRENT_BINARY_DIR}/help/${filename}")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
-            ${help_file} ${dest})
+        file(CREATE_LINK ${help_file} ${dest})
     endforeach()
 else()
     message(STATUS "Copying help files (Non-Debug mode)")
@@ -57,8 +56,7 @@ else()
     endforeach()
 endif()
 
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     enable_testing()
 
     add_executable(WoodCodeTests tests/tests.cpp)
