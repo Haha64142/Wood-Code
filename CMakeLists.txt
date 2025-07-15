@@ -45,3 +45,13 @@ else()
             COPYONLY)
     endforeach()
 endif()
+
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    enable_testing()
+
+    add_executable(WoodCodeTests tests/tests.cpp)
+    target_link_libraries(WoodCodeTests PRIVATE woodcode_lib)
+
+    add_test(NAME WoodCodeTests COMMAND WoodCodeTests)
+endif()

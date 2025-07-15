@@ -165,9 +165,10 @@ int main(int argc, char *argv[])
             input = argv[2];
             if (input == "--file" || input == "-f")
             {
-                std::cout << "Warning: You entered 'woodcode encode --file' without specifying a file name." << std::endl
-                          << "If you intended to encode a file, use: woodcode encode --file <file>" << std::endl
-                          << "Encoding '--file' to WoodCode" << std::endl
+                std::cout << "Warning: You entered 'woodcode encode " << input << "' without specifying a file name." << std::endl
+                          << "If you intended to encode a file, use: woodcode encode " << input << " <file>" << std::endl
+                          << std::endl
+                          << "Encoding '" << input << "' to WoodCode" << std::endl
                           << std::endl;
             }
         }
@@ -186,25 +187,33 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        WoodCode woodCode; // Initialize WoodCode with default keys and values
-        if (!woodCode.initialized)
+        WoodCode wc; // Initialize WoodCode with default keys and values
+        if (!wc.initialized)
         {
-            std::cerr << "Error initializing WoodCode. Please download the latest version" << std::endl;
-            std::cerr << "or submit a bug report at https://github.com/Haha64142/Wood-Code/issues" << std::endl;
+            std::cerr << wc.initialized.message << std::endl
+                      << std::endl
+                      << "Error initializing WoodCode. Please download the latest version" << std::endl
+                      << "or submit a bug report at https://github.com/Haha64142/Wood-Code/issues" << std::endl;
             return 1;
         }
 
-        std::string result = woodCode.encode(input);
+        Result<std::string> result = wc.encode(input);
 
-        if (result.empty())
+        if (result)
         {
-            std::cerr << "Encoding failed" << std::endl;
-            return 1;
+            if (result.isWarning())
+            {
+                std::cout << result.message << std::endl
+                          << std::endl;
+            }
+            std::cout << "Encoded text: " << result.value << std::endl;
+            return 0;
         }
         else
         {
-            std::cout << "Encoded text: " << result << std::endl;
-            return 0;
+            std::cerr << result.message << std::endl
+                      << "Encoding failed" << std::endl;
+            return 1;
         }
     }
     else if (command == "decode")
@@ -242,21 +251,31 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        std::string result = woodCode.decode(input);
+        Result<std::string> result = woodCode.decode(input);
 
-        if (result.empty())
+        if (result)
         {
-            std::cerr << "Decoding failed" << std::endl;
-            return 1;
+            if (!result.value.empty())
+            {
+                if (std::isspace(result.value.front()) || std::isspace(result.value.back()))
+                {
+                    result.value = "'" + result.value + "'";
+                }
+            }
+
+            if (result.isWarning())
+            {
+                std::cout << result.message << std::endl
+                          << std::endl;
+            }
+            std::cout << "Decoded text: " << result.value << std::endl;
+            return 0;
         }
         else
         {
-            if (std::isspace(result.front()) || std::isspace(result.back()))
-            {
-                result = "'" + result + "'";
-            }
-            std::cout << "Decoded text: " << result << std::endl;
-            return 0;
+            std::cerr << result.message << std::endl
+                      << "Decoding failed" << std::endl;
+            return 1;
         }
     }
     else

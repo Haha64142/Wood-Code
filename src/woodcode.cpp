@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
-#include <optional>
 #include <unordered_map>
 #include <string>
 #include <sstream>
@@ -11,16 +10,34 @@
 
 // ================ WoodCodeUtils ================
 
+bool WoodCodeUtils::isNum(std::string str)
+{
+    if (str.empty())
+    {
+        return false;
+    }
+
+    for (char &c : str)
+    {
+        if (!isdigit(c))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 int WoodCodeUtils::convertToBase(int num, int base)
 {
     std::string result = "";
 
-    while (num > 0)
+    do
     {
         int remainder = num % base;
         result = std::to_string(remainder) + result;
         num /= base;
-    }
+    } while (num > 0);
     return std::stoi(result);
 }
 
@@ -77,7 +94,7 @@ std::string WoodCodeUtils::escapeString(const std::string &input)
     std::string result;
     result.reserve(input.size() * 2); // optimization: avoids reallocs
 
-    for (char c : input)
+    for (const char &c : input)
     {
         result += escapeChar(c);
     }
@@ -90,77 +107,96 @@ std::string WoodCodeUtils::escapeString(const std::string &input)
 WoodCode::WoodCode(std::string keys, std::string values)
 {
     // converts the 2 strings into a charMap
-    initialized = initCharMap(keys, values); // initCharMap() -> returns true if successful
+    initialized = initCharMap(keys, values);
 }
 
-std::string WoodCode::encode(std::string input) const
+Result<std::string> WoodCode::encode(std::string input) const
 {
-    auto result = checkInput(input); // checkInput() -> checks if the input contains valid chars
+    // checkInput() -> checks if the input contains valid chars. Return true if a character is found
+    Result<char> result = checkInput(input);
     if (result)
     {
-        std::cerr << std::endl
-                  << "Invalid input: " << WoodCodeUtils::escapeChar(*result) << " is not a valid character" << std::endl;
-        return "";
+        return Result<std::string>::Err("Invalid Input: " + WoodCodeUtils::escapeChar(result.value) + " is not a valid char");
     }
-    std::string date = WoodCodeUtils::getDate();             // getDate() -> returns current date in "MMDDYY" format
-    int dateOffset = getDateOffset(date);                    // getDateOffset() -> returns a number based on the current date
-    std::string encodedData = encodeData(input, dateOffset); // encodeData() -> return a string with the encoded data
+    std::string date = WoodCodeUtils::getDate();                     // getDate() -> returns current date in "MMDDYY" format
+    int dateOffset = getDateOffset(date);                            // getDateOffset() -> returns a number based on the current date
+    Result<std::string> encodedData = encodeData(input, dateOffset); // encodeData() -> return a string with the encoded data
+    if (!encodedData)
+    {
+        return Result<std::string>::Err(encodedData.message);
+    }
 
-    return "W10305" + encodedData + date;
+    return Result<std::string>::Ok("W10305" + encodedData.value + date);
 }
 
-std::string WoodCode::decode(std::string input) const
+Result<std::string> WoodCode::decode(std::string input) const
 {
+    if (input.length() < 12)
+    {
+        return Result<std::string>::Err("Invalid code: " + WoodCodeUtils::escapeString(input));
+    }
+
     std::string header = input.substr(0, 6); // W10305
     if (header != "W10305")
     {
-        if (!(std::isalpha(header.front()) && std::isdigit(header.at(1)) && std::isdigit(header.at(2)) && std::isdigit(header.at(3)) && std::isdigit(header.at(4)) && std::isdigit(header.at(5))))
+        if (header.front() != 'W' || !WoodCodeUtils::isNum(header.substr(1, 5)))
         {
-            std::cerr << std::endl
-                      << "Invalid header: " << WoodCodeUtils::escapeString(header) << std::endl;
-            return "";
+            return Result<std::string>::Err("Invalid header: " + WoodCodeUtils::escapeString(header));
         }
         int version = std::stoi(header.substr(1, 5));
+        std::string versionString = "v" + std::to_string(version / 10000) + "." +
+                                    std::to_string((version / 100) % 100) + "." +
+                                    std::to_string(version % 100);
         if (version < 10305)
         {
-            std::cerr << std::endl
-                      << "Version: v" << header.substr(1, 2) << "." << header.substr(3, 2) << "." << header.substr(5, 2)
-                      << " is too old, please use WoodCode v1.3.5 or download an older decoder" << std::endl;
-            return "";
+            return Result<std::string>::Err("Version: " + versionString + " is too old, please use WoodCode v1.3.5 or download an older decoder");
         }
-        if (version > 10305)
+        else if (version > 10305)
         {
-            std::cerr << std::endl
-                      << "Version: v" << header.substr(1, 2) << "." << header.substr(3, 2) << "." << header.substr(5, 2)
-                      << " is not supported, please use WoodCode v1.3.5 or download the appropriate decoder" << std::endl;
+            return Result<std::string>::Err("Version: " + versionString + " is too new, please use WoodCode v1.3.5 or download the latest decoder");
         }
 
-        std::cerr << std::endl
-                  << "Invalid header: " << WoodCodeUtils::escapeString(header) << std::endl;
-        return "";
+        return Result<std::string>::Err("How the hell did you manage to get here.\nPlease download the latest version or submit a bug report at https://github.com/Haha64142/Wood-Code/issues");
     }
 
     std::string date = input.substr(input.length() - 6, 6); // Get the last 6 characters as date
+    if (!WoodCodeUtils::isNum(date))
+    {
+        return Result<std::string>::Err("Invalid code: " + WoodCodeUtils::escapeString(input));
+    }
 
     input = input.substr(6, input.length() - 12); // Remove the version and date from the input
+    if (input.empty())
+    {
+        return Result<std::string>::Warn(input, "Warning: Decoded result is empty");
+    }
+    if (!WoodCodeUtils::isNum(input))
+    {
+        return Result<std::string>::Err("Invalid code: " + WoodCodeUtils::escapeString(input));
+    }
 
     int dateOffset = getDateOffset(date);
-    std::string decodedData = decodeData(input, dateOffset);
+    Result<std::string> decodedData = decodeData(input, dateOffset);
+
+    if (decodedData.isOk() && decodedData.value.empty())
+    {
+        return Result<std::string>::Warn(decodedData.value, "Error: Input passed all checks but still returned an empty string.\nPlease download the latest version or submit a bug report at https://github.com/Haha64142/Wood-Code/issues");
+    }
 
     return decodedData;
 }
 
-std::optional<char> WoodCode::checkInput(std::string &input) const
+Result<char> WoodCode::checkInput(const std::string &input) const
 {
-    // Replace regex with a simple loop to check for valid characters
-    for (char &c : input)
+    // Replace regex with a simple loop to check for valid characters, return true if an invalid char is found
+    for (const char &c : input)
     {
         if (!std::isalnum(c) && specialCharMap.find(c) == specialCharMap.end())
         {
-            return c; // Return the first invalid character
+            return Result<char>::Ok(c); // Return the first invalid character, success = true
         }
     }
-    return std::nullopt; // If valid, return std::nullopt
+    return Result<char>::Err(""); // If valid, success = false
 }
 
 std::string WoodCode::getValidChars() const
@@ -174,7 +210,7 @@ std::string WoodCode::getValidChars() const
     return validChars;
 }
 
-int WoodCode::getDateOffset(std::string &date) const
+int WoodCode::getDateOffset(const std::string &date) const
 {
     int month = std::stoi(date.substr(0, 2));
     int day = std::stoi(date.substr(2, 2));
@@ -185,7 +221,7 @@ int WoodCode::getDateOffset(std::string &date) const
     return offset;
 }
 
-std::string WoodCode::encodeData(std::string &input, int &dateOffset) const
+Result<std::string> WoodCode::encodeData(const std::string &input, const int &dateOffset) const
 {
     std::string encodedString = "";
 
@@ -245,8 +281,7 @@ std::string WoodCode::encodeData(std::string &input, int &dateOffset) const
         valueString = std::to_string(value);
         if (valueString.length() > 3)
         {
-            std::cerr << "Value exceeds 3 digits: " << valueString << std::endl;
-            return "";
+            return Result<std::string>::Err("Error: Value exceeds 3 digits: " + valueString);
         }
 
         while (valueString.length() < 3)
@@ -259,10 +294,10 @@ std::string WoodCode::encodeData(std::string &input, int &dateOffset) const
     }
 
     // Return the encodedString
-    return encodedString;
+    return Result<std::string>::Ok(encodedString);
 }
 
-std::string WoodCode::decodeData(std::string &input, int &dateOffset) const
+Result<std::string> WoodCode::decodeData(const std::string &input, const int &dateOffset) const
 {
     std::vector<int> inputChunks;
 
@@ -280,9 +315,7 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset) const
         value -= dateOffset;
         if (value < 0 || value > 499)
         {
-            std::cerr << std::endl
-                      << "Invalid value after date offset: " << value << std::endl;
-            return "";
+            return Result<std::string>::Err("Invalid value after date offset: " + std::to_string(value));
         }
     }
 
@@ -339,31 +372,22 @@ std::string WoodCode::decodeData(std::string &input, int &dateOffset) const
     }
 
     // Return the decodedString;
-    return decodedString;
+    return Result<std::string>::Ok(decodedString);
 }
 
-bool WoodCode::initCharMap(const std::string &keys, const std::string &values)
+SimpleResult WoodCode::initCharMap(const std::string &keys, const std::string &values)
 {
     if (keys.length() != 26 && keys.length() < 26)
     {
-        std::cerr << "Key must be 26 characters or longer." << std::endl
-                  << "Error initializing character map." << std::endl
-                  << std::endl;
-        return false;
+        return SimpleResult::Err("Key must be 26 characters or longer.\nError initializing character map.");
     }
     if (values.length() % 2 != 0)
     {
-        std::cerr << "Values must be an even number of characters." << std::endl
-                  << "Error initializing character map." << std::endl
-                  << std::endl;
-        return false;
+        return SimpleResult::Err("Values must be an even number of characters.\nError initializing character map.");
     }
     if (values.length() != keys.length() * 2)
     {
-        std::cerr << "Values must be twice the length of keys." << std::endl
-                  << "Error initializing character map." << std::endl
-                  << std::endl;
-        return false;
+        return SimpleResult::Err("Values must be twice the length of keys.\nError initializing character map.");
     }
 
     charMap.clear();
@@ -377,7 +401,7 @@ bool WoodCode::initCharMap(const std::string &keys, const std::string &values)
 
     if (keys.length() == 26)
     {
-        return true;
+        return SimpleResult::Ok();
     }
 
     for (int i = 26; i < keys.length(); i++)
@@ -387,5 +411,5 @@ bool WoodCode::initCharMap(const std::string &keys, const std::string &values)
         specialCharMap[keyChar] = value;
         specialReverseMap[value] = keyChar;
     }
-    return true;
+    return SimpleResult::Ok();
 }
