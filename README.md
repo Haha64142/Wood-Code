@@ -40,8 +40,8 @@ Show Usage
 ```
 
 > 💡 **Windows users without Bash:**\
-> You can install Bash using [Git for Windows](https://gitforwindows.com) (recommended), [MSYS2](https://www.msys2.org/), or [Cygwin](https://www.cygwin.com/).\
-> Then run the script from the Bash terminal.
+> You can install Bash using [Git for Windows](https://gitforwindows.com) (recommended), [MSYS2](https://www.msys2.org/), [Cygwin](https://www.cygwin.com/), or [WSL](https://learn.microsoft.com/en-us/windows/wsl/).\
+> Then run `build.cmd` inside of cmd or `./build.sh` inside the installed terminal
 
 ---
 
@@ -66,7 +66,7 @@ Executables will be placed in:
 
 ## 🧪 Examples
 
-### WoodCodeApp (Interactive)
+### 🎛️ WoodCodeApp (Interactive)
 
 ```text
 Would you like to Encode [e], Decode [d], Help [h], or Quit [q]? e
@@ -80,7 +80,7 @@ Enter text to decode: W10305095180175175187469085187199175177467071525
 Decoded text: Hello World!
 ```
 
-### woodcode (Command Line)
+### 💻 woodcode (Command Line)
 
 - `woodcode` for CMD or Powershell
 - `./woodcode` for Bash
