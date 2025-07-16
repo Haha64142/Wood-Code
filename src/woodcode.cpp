@@ -126,7 +126,7 @@ Result<std::string> WoodCode::encode(std::string input) const
         return Result<std::string>::Err(encodedData.message);
     }
 
-    return Result<std::string>::Ok("W10305" + encodedData.value + date);
+    return Result<std::string>::Ok("W10400" + encodedData.value + date);
 }
 
 Result<std::string> WoodCode::decode(std::string input) const
@@ -136,8 +136,8 @@ Result<std::string> WoodCode::decode(std::string input) const
         return Result<std::string>::Err("Invalid code: " + WoodCodeUtils::escapeString(input));
     }
 
-    std::string header = input.substr(0, 6); // W10305
-    if (header != "W10305")
+    std::string header = input.substr(0, 6); // W10400
+    if (header != "W10400")
     {
         if (header.front() != 'W' || !WoodCodeUtils::isNum(header.substr(1, 5)))
         {
@@ -147,13 +147,13 @@ Result<std::string> WoodCode::decode(std::string input) const
         std::string versionString = "v" + std::to_string(version / 10000) + "." +
                                     std::to_string((version / 100) % 100) + "." +
                                     std::to_string(version % 100);
-        if (version < 10305)
+        if (version < 10400)
         {
-            return Result<std::string>::Err("Version: " + versionString + " is too old, please use WoodCode v1.3.5 or download an older decoder");
+            return Result<std::string>::Err("Version: " + versionString + " is too old, please use WoodCode v1.4.0-dev or download an older decoder");
         }
-        else if (version > 10305)
+        else if (version > 10400)
         {
-            return Result<std::string>::Err("Version: " + versionString + " is too new, please use WoodCode v1.3.5 or download the latest decoder");
+            return Result<std::string>::Err("Version: " + versionString + " is too new, please use WoodCode v1.4.0-dev or download the latest decoder");
         }
 
         return Result<std::string>::Err("How the hell did you manage to get here.\nPlease download the latest version or submit a bug report at https://github.com/Haha64142/Wood-Code/issues");
@@ -226,13 +226,13 @@ Result<std::string> WoodCode::encodeData(const std::string &input, const int &da
     std::string encodedString = "";
 
     // Loop through each character in the input string
-    for (int i = 0; i < input.length(); i++)
+    for (size_t i = 0; i < input.length(); ++i)
     {
         char currentChar = input.at(i);
         int value = 0;
         std::string valueString;
 
-        // If it's a letter, get it's value based on the keyArray (i.e. A=keyArray[0], B=keyArray[1], etc.)
+        // If it's a letter, get it's value based on the keyArray (e.g. A=keyArray[0], B=keyArray[1], etc.)
         if (std::isalpha(currentChar))
         {
             value = charMap.at(std::toupper(currentChar));
@@ -257,10 +257,10 @@ Result<std::string> WoodCode::encodeData(const std::string &input, const int &da
 
             if (std::isdigit(next))
             {
-                // If next = num, combine the current and next, and add 200, skip next char (i++)
+                // If next = num, combine the current and next, and add 200, skip next char (++i)
                 value = (currentChar - '0') * 10 + (next - '0'); // 1 * 10 + 2 = 12
                 value += 200;
-                i++;
+                ++i;
             }
             else
             {
@@ -302,7 +302,7 @@ Result<std::string> WoodCode::decodeData(const std::string &input, const int &da
     std::vector<int> inputChunks;
 
     // Split the input string into chunks of 3 characters
-    for (int i = 0; i < input.length(); i += 3)
+    for (size_t i = 0; i < input.length(); i += 3)
     {
         std::string chunk = input.substr(i, 3);
         int value = std::stoi(chunk);
@@ -391,7 +391,7 @@ SimpleResult WoodCode::initCharMap(const std::string &keys, const std::string &v
     }
 
     charMap.clear();
-    for (int i = 0; i < 26; i++)
+    for (size_t i = 0; i < 26; ++i)
     {
         char keyChar = keys.at(i);
         int value = std::stoi(values.substr(i * 2, 2));
@@ -404,7 +404,7 @@ SimpleResult WoodCode::initCharMap(const std::string &keys, const std::string &v
         return SimpleResult::Ok();
     }
 
-    for (int i = 26; i < keys.length(); i++)
+    for (size_t i = 26; i < keys.length(); ++i)
     {
         char keyChar = keys.at(i);
         int value = std::stoi(values.substr(i * 2, 2));

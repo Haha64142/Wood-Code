@@ -18,14 +18,20 @@
 set -e
 set -o pipefail
 
+SCRIPT_NAME="$0"
+if [ "$1" == "--cmd" ]; then
+    SCRIPT_NAME="build.cmd"
+    shift
+fi
+
 show_help() {
     echo ""
     echo "Usage:"
     echo ""
-    echo "  ./build.sh"
-    echo "  ./build.sh --help"
-    echo "  ./build.sh --reset"
-    echo "  ./build.sh --cmake-build Debug"
+    echo "  $SCRIPT_NAME"
+    echo "  $SCRIPT_NAME --help"
+    echo "  $SCRIPT_NAME --reset"
+    echo "  $SCRIPT_NAME --cmake-build Debug"
     echo ""
     echo "Run without parameters to use the default build (Release)"
     echo ""
@@ -52,7 +58,7 @@ case "$1" in
     --cmake-build)
         if [ -z "$2" ]; then
             echo "Error: No build type provided for --cmake-build"
-            echo "Usage: ./build.sh --cmake-build Debug"
+            echo "Usage: $SCRIPT_NAME --cmake-build Debug"
             exit 1
         fi
         BUILD_TYPE="$2"
@@ -65,7 +71,7 @@ case "$1" in
         ;;
     *)
         echo "Unknown option: $1"
-        echo "Use './build.sh --help' for usage."
+        echo "Use '$SCRIPT_NAME --help' for usage."
         exit 1
         ;;
 esac

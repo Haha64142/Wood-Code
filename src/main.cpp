@@ -22,7 +22,7 @@ int main()
         return 1;
     }
 
-    std::cout << "Welcome to WoodCode v1.3.5" << std::endl
+    std::cout << "Welcome to WoodCode v1.4.0-dev" << std::endl
               << "This is a simple encoding/decoding tool created by Haha64142." << std::endl
               << "View the source code at https://github.com/Haha64142/Wood-Code" << std::endl
               << "Type 'h' for help, 'e' to encode, 'd' to decode, or 'q' to quit." << std::endl

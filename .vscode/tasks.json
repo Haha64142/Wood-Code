@@ -24,7 +24,7 @@
       "label": "Clean Build Files",
       "type": "shell",
       "command": "bash",
-      "args": ["--reset"],
+      "args": ["./build.sh", "--reset"],
       "problemMatcher": [],
       "group": "build"
     }
@@ -32,7 +32,6 @@
 }
 // Add this to settings.json
 /*
-  "taskExplorer.enableSideBar": true,
     "actionButtons": {
     "commands": [
       {
@@ -59,7 +58,5 @@
         "args": ["Clean Build Files"]
       }
     ]
-  }
-  "taskExplorer.clickAction": "Execute",
-  "terminal.integrated.accessibleViewFocusOnCommandExecution": true,
+  },
 */

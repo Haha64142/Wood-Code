@@ -18,4 +18,6 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-call bash ./build.sh %*
+set SCRIPT_DIR=%~dp0
+
+call bash "%SCRIPT_DIR%build.sh" --cmd %*

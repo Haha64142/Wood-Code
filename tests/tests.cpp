@@ -16,7 +16,7 @@ void test_decode_invalid_length()
 void test_decode_invalid_header_format()
 {
     WoodCode code;
-    auto result = code.decode("Z10305abc123"); // wrong start char
+    auto result = code.decode("Z10400abc123"); // wrong start char
     assert(result.isError());
     assert(result.message.find("Invalid header") != std::string::npos);
 }
@@ -40,7 +40,7 @@ void test_decode_new_version()
 void test_decode_empty_payload()
 {
     WoodCode code;
-    auto result = code.decode("W10305071425"); // valid version + date, no payload
+    auto result = code.decode("W10400071425"); // valid version + date, no payload
     assert(result.isWarning());
     assert(result.message.find("Decoded result is empty") != std::string::npos);
 }
@@ -66,7 +66,7 @@ void test_encode_empty_string()
     WoodCode code;
     auto result = code.encode(""); // should be valid
     assert(result.isOk());
-    assert(result.value.find("W10305") == 0); // still encodes
+    assert(result.value.find("W10400") == 0); // still encodes
 }
 
 void test_decode_encoded_empty_string()
@@ -82,15 +82,15 @@ void test_decode_encoded_empty_string()
 void test_decode_how_did_you_get_here()
 {
     WoodCode code;
-    // Valid W-prefix, valid digits, but version == 10305 (same as expected) gets rejected below for some edge reason
+    // Valid W-prefix, valid digits, but version == 10400 (same as expected) gets rejected below for some edge reason
     // So let’s try slipping past the outer check but not triggering a version error
 
     // This should not happen naturally, but let's bypass the exact header match to force the unreachable fallback.
-    std::string input = "W10305badc0d"; // Skips the exact-match check, passes the numeric version check
+    std::string input = "W10400badc0d"; // Skips the exact-match check, passes the numeric version check
 
     // We'll patch the version logic to force it to run to the unreachable line:
-    // Pretend it's W10305 but not exactly the same string (maybe by whitespace or something corrupt)
-    auto result = code.decode("W10305\n000000"); // Should fail inside and fall through
+    // Pretend it's W10400 but not exactly the same string (maybe by whitespace or something corrupt)
+    auto result = code.decode("W10400\n000000"); // Should fail inside and fall through
     assert(result.isError());
     assert(result.message.find("How the hell") == std::string::npos);
 }
@@ -130,10 +130,10 @@ void test_decode_short_strings()
     auto r1 = code.decode("W1030"); // too short
     assert(r1.isError());
 
-    auto r2 = code.decode("W10305123"); // less than 12 chars but looks closer
+    auto r2 = code.decode("W10400123"); // less than 12 chars but looks closer
     assert(r2.isError());
 
-    auto r3 = code.decode("W10305123456"); // exactly 12 chars, valid length but maybe invalid payload
+    auto r3 = code.decode("W10400123456"); // exactly 12 chars, valid length but maybe invalid payload
     // Can't guarantee error or not here, just check Result is valid
     assert(r3.message.find("Decoded result is empty") != std::string::npos);
 }
@@ -141,7 +141,7 @@ void test_decode_short_strings()
 void test_decode_unicode_chars()
 {
     WoodCode code;
-    std::string unicodeStr = u8"W10305\u03B1\u03B2\u03B3" + std::string("000000"); // Greek letters in payload
+    std::string unicodeStr = u8"W10400\u03B1\u03B2\u03B3" + std::string("000000"); // Greek letters in payload
     auto result = code.decode(unicodeStr);
     assert(result.isError() || result.isWarning() || result.isOk()); // just test it doesn’t crash
 }
@@ -168,7 +168,7 @@ void test_decode_corrupt_header_footer()
     assert(r1.message.find("Decoded result is empty"));
 
     // Date substring corrupt (non-numeric)
-    std::string input = "W10305" + std::string("123456") + "ABCDEF";
+    std::string input = "W10400" + std::string("123456") + "ABCDEF";
     auto r2 = code.decode(input);
     assert(r2.message.find("Invalid code") != std::string::npos);
 }
