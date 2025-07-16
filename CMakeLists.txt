@@ -4,10 +4,18 @@ project(WoodCode)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set default build type to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+endif()
+
+# Verify build type
+set(SUPPORTED_BUILD_TYPES Debug Release RelWithDebInfo MinSizeRel)
+
+if(NOT CMAKE_BUILD_TYPE IN_LIST SUPPORTED_BUILD_TYPES)
+    message(FATAL_ERROR "\nInvalid build type: ${CMAKE_BUILD_TYPE}\nChoose one of: ${SUPPORTED_BUILD_TYPES}")
 endif()
 
 add_library(woodcode_lib src/woodcode.cpp)
@@ -16,10 +24,12 @@ target_include_directories(woodcode_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 # CLI executable
 add_executable("woodcode" src/cli.cpp)
 target_link_libraries("woodcode" PRIVATE woodcode_lib)
+set_target_properties(woodcode PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Main executable (Non-CLI, less powerful)
 add_executable("WoodCodeApp" src/main.cpp)
 target_link_libraries("WoodCodeApp" PRIVATE woodcode_lib)
+set_target_properties(WoodCodeApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Get help files
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/help")
