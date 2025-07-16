@@ -1,92 +1,77 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Configure with CMake",
-            "type": "shell",
-            "command": "cmake -S . -B build -G Ninja",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "Debug Build",
-            "type": "shell",
-            "command": "cmake --build build",
-            "problemMatcher": [],
-            "group": "build"
-        },
-        {
-            "label": "Release Build",
-            "type": "shell",
-            "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja; cmake --build build",
-            "problemMatcher": [],
-            "group": "build"
-        },
-        {
-            "label": "Clean Build Files",
-            "type": "shell",
-            "command": "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue build/",
-            "problemMatcher": [],
-            "group": "build"
-        },
-        {
-            "label": "Copy Help Files",
-            "type": "shell",
-            "command": "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue build/help; Copy-Item -Recurse help/ build/help/",
-            "problemMatcher": [],
-            "group": "build"
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure with CMake",
+      "type": "shell",
+      "command": "cmake -S . -B build -G Ninja",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Debug Build",
+      "type": "shell",
+      "command": "cmake --build build",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Release Build",
+      "type": "shell",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja; cmake --build build",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Clean Build Files",
+      "type": "shell",
+      "command": "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue build/",
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
 }
 // Add this to settings.json
 /*
-"taskExplorer.enableSideBar": true,
-    "actionButtons": {
-        "commands": [
-            {
-                "name": "⚙️ Configure",
-                "tooltip": "Configure with CMake",
-                "saveAll": true,
-                "useVsCodeApi": true,
-                "command": "workbench.action.tasks.runTask",
-                "args": [
-                    "Configure with CMake"
-                ]
-            },
-            {
-                "name": "🔨 Build",
-                "tooltip": "Build with Ninja",
-                "saveAll": true,
-                "useVsCodeApi": true,
-                "command": "workbench.action.tasks.runTask",
-                "args": [
-                    "Build with Ninja"
-                ]
-            },
-            {
-                "name": "🧹 Clean + Rebuild",
-                "tooltip": "Clean + Rebuild",
-                "saveAll": true,
-                "useVsCodeApi": true,
-                "command": "workbench.action.tasks.runTask",
-                "args": [
-                    "Clean + Rebuild"
-                ]
-            },
-            {
-                "name": "Copy Help",
-                "tooltip": "Copy Help Files",
-                "useVsCodeApi": true,
-                "command": "workbench.action.tasks.runTask",
-                "args": [
-                    "Copy Help Files"
-                ]
-            }
-        ],
-    },
-    "taskExplorer.clickAction": "Execute",
-    "terminal.integrated.accessibleViewFocusOnCommandExecution": true,
+  "taskExplorer.enableSideBar": true,
+  "actionButtons": {
+    "commands": [
+      {
+        "name": "⚙️ Configure",
+        "tooltip": "Configure with CMake",
+        "saveAll": true,
+        "useVsCodeApi": true,
+        "command": "workbench.action.tasks.runTask",
+        "args": ["Configure with CMake"]
+      },
+      {
+        "name": "🔨 Build",
+        "tooltip": "Build with Ninja",
+        "saveAll": true,
+        "useVsCodeApi": true,
+        "command": "workbench.action.tasks.runTask",
+        "args": ["Build with Ninja"]
+      },
+      {
+        "name": "🚀 Release Build",
+        "tooltip": "Generate Release Build",
+        "useVsCodeApi": true,
+        "command": "workbench.action.tasks.runTask",
+        "args": ["Release Build"]
+      },
+      {
+        "name": "🧹 Clean",
+        "tooltip": "Clean Build Files",
+        "saveAll": true,
+        "useVsCodeApi": true,
+        "command": "workbench.action.tasks.runTask",
+        "args": ["Clean Build Files"]
+      }
+    ]
+  },
+  "taskExplorer.clickAction": "Execute",
+  "terminal.integrated.accessibleViewFocusOnCommandExecution": true,
 */

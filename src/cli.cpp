@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <limits>
+#include <filesystem>
 
 #include "woodcode.h"
 
@@ -25,7 +26,7 @@ std::string strToLower(std::string str)
     return str;
 }
 
-std::string readFile(const std::string &filename)
+std::string readFile(const std::filesystem::path &filename)
 {
     std::ifstream file(filename);
     if (!file)
@@ -40,29 +41,29 @@ std::string readFile(const std::string &filename)
     return content;
 }
 
-void printHelp(Command command)
+void printHelp(const std::filesystem::path &exeDir, Command command)
 {
-    std::string helpFile = "";
+    std::string filename = "";
     switch (command)
     {
     case woodcode:
-        helpFile = "help/woodcode.help";
+        filename = "woodcode.help";
         break;
 
     case App:
-        helpFile = "help/app.help";
+        filename = "app.help";
         break;
 
     case Encode:
-        helpFile = "help/encode.help";
+        filename = "encode.help";
         break;
 
     case Decode:
-        helpFile = "help/decode.help";
+        filename = "decode.help";
         break;
 
     case Help:
-        helpFile = "help/help.help";
+        filename = "help.help";
         break;
 
     default:
@@ -73,11 +74,12 @@ void printHelp(Command command)
         return;
     }
 
-    std::string helpText = readFile(helpFile);
+    std::filesystem::path helpPath = (exeDir.parent_path() / "help" / filename);
+    std::string helpText = readFile(helpPath);
     if (helpText.empty())
     {
         std::cerr << "Error: Failed to print help text." << std::endl
-                  << "Check that " << helpFile << " exists in the current directory." << std::endl;
+                  << "Check that " << helpPath << " exists." << std::endl;
         return;
     }
 
@@ -87,9 +89,11 @@ void printHelp(Command command)
 
 int main(int argc, char *argv[])
 {
+    std::filesystem::path exeDir = std::filesystem::canonical(argv[0]).parent_path(); // .../build/Release/bin/
+
     if (argc < 2)
     {
-        printHelp(woodcode);
+        printHelp(exeDir, woodcode);
         return 1;
     }
 
@@ -126,7 +130,7 @@ int main(int argc, char *argv[])
             {
                 for (int i = 0; i < CommandCount; i++)
                 {
-                    printHelp(static_cast<Command>(i));
+                    printHelp(exeDir, static_cast<Command>(i));
                     std::cout << std::endl;
                 }
                 return 0;
@@ -138,7 +142,7 @@ int main(int argc, char *argv[])
                 return 1;
             }
         }
-        printHelp(helpCommand);
+        printHelp(exeDir, helpCommand);
         return 0;
     }
     else if (command == "-v" || command == "--version")
@@ -149,10 +153,11 @@ int main(int argc, char *argv[])
     }
     else if (command == "app")
     {
-        int result = std::system("WoodCodeApp.exe");
+        std::string appCommand = "\"" + (exeDir / "WoodCodeApp.exe").string() + "\"";
+        int result = std::system(appCommand.c_str());
         if (result != 0)
         {
-            std::cerr << "Error running WoodCodeApp.exe. Please ensure it exists in the current directory." << std::endl;
+            std::cerr << "Error running WoodCodeApp.exe. Please ensure it exists next to woodcode.exe" << std::endl;
             return 1;
         }
         return 0;
@@ -178,7 +183,7 @@ int main(int argc, char *argv[])
         }
         else if (argc == 2)
         {
-            printHelp(Encode);
+            printHelp(exeDir, Encode);
             return 1;
         }
         else
@@ -234,7 +239,7 @@ int main(int argc, char *argv[])
         }
         else if (argc == 2)
         {
-            printHelp(Decode);
+            printHelp(exeDir, Decode);
             return 1;
         }
         else
