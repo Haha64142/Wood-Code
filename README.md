@@ -19,9 +19,9 @@ Make sure you have the following installed and added to your system's `PATH`:
 - [CMake](https://cmake.org/download/) ≥ 3.10
 - [Ninja](https://github.com/ninja-build/ninja/releases) (build system)
 - C++17-compatible compiler
-    - `g++`
-    - `clang++`
-    - `MSVC` (Visual Studio)
+  - `g++`
+  - `clang++`
+  - `MSVC` (Visual Studio)
 
 ---
 
@@ -41,7 +41,7 @@ Show Usage
 
 > 💡 **Windows users without Bash:**\
 > You can install Bash using [Git for Windows](https://gitforwindows.com) (recommended), [MSYS2](https://www.msys2.org/), [Cygwin](https://www.cygwin.com/), or [WSL](https://learn.microsoft.com/en-us/windows/wsl/).\
-> Then run `build.cmd` inside of cmd or `./build.sh` inside the installed terminal
+> Then run `build.cmd` inside Command Prompt or `./build.sh` inside the installed terminal
 
 ---
 
@@ -51,6 +51,8 @@ Show Usage
 cmake -S . -B build/Release -DCMAKE_BUILD_TYPE=Release -G Ninja
 cmake --build build/Release
 ```
+
+---
 
 Executables will be placed in:
 `build/Release/bin/`
@@ -92,6 +94,7 @@ Print Usage and Commands
 ./woodcode encode 'Hello World!'
 ./woodcode decode W10305095180175175187469085187199175177467071525
 ```
+
 > 💡 Use quotes around input with spaces or special characters.
 
 You can also encode/decode from a file using `-f` or `--file`
