@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CPACK_PACKAGE_NAME "WoodCode")
+set(CPACK_PACKAGE_VERSION "1.4.0")
+set(CPACK_GENERATOR "ZIP")
+include(CPack)
+
 # Set default build type to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
@@ -26,14 +31,20 @@ add_executable("woodcode" src/cli.cpp)
 target_link_libraries("woodcode" PRIVATE woodcode_lib)
 set_target_properties(woodcode PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+install(TARGETS woodcode RUNTIME DESTINATION bin)
+
 # Main executable (Non-CLI, less powerful)
 add_executable("WoodCodeApp" src/main.cpp)
 target_link_libraries("WoodCodeApp" PRIVATE woodcode_lib)
 set_target_properties(WoodCodeApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+install(TARGETS WoodCodeApp RUNTIME DESTINATION bin)
+
 # Get help files
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/help")
 file(GLOB HELP_FILES "${PROJECT_SOURCE_DIR}/help/*.help")
+
+install(FILES ${HELP_FILES} DESTINATION help)
 
 # Choose behavior based on build type
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
