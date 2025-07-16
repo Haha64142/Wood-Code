@@ -22,6 +22,7 @@ jobs:
 
       - name: Extract version from tag
         id: get_version
+        shell: bash
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           VERSION="${TAG#release/}"
@@ -46,5 +47,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print release version
+        shell: bash
         run: |
           echo "Released version: ${{ steps.get_version.outputs.version }}"
