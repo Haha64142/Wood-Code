@@ -1,7 +1,8 @@
 # WoodCode
 
-**Version**: v1.3.5  
-**Author**: Paul (Haha64142)
+**Most Recent Stable Version**: `v1.3.5`\
+**Latest Devolpment Version**: `v1.4.0-dev`\
+**Author**: Paul ([@Haha64142](https://github.com/Haha64142))
 
 WoodCode is a custom, date-based encoding system for obfuscating strings. It supports letters, numbers, and select special characters, with output that varies based on the current date. The system is designed to be compact, and extensible.
 
@@ -12,7 +13,11 @@ See the full protocol specification for details:
 
 ## ⚙️ Build Instructions
 
-### 🔧 Prerequisites
+### You can download pre-built binaries in the [Releases tab](https://github.com/Haha64142/Wood-Code/releases)
+
+---
+
+### 🔧 Build Prerequisites
 
 Make sure you have the following installed and added to your system's `PATH`:
 
@@ -95,7 +100,7 @@ Print Usage and Commands
 ./woodcode decode W10305095180175175187469085187199175177467071525
 ```
 
-> 💡 Use quotes around input with spaces or special characters.
+> 💡 **Tip**: Use quotes around inputs with spaces or special characters.
 
 You can also encode/decode from a file using `-f` or `--file`
 
