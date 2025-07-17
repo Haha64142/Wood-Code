@@ -45,7 +45,10 @@ jobs:
           body: |
             This release contains pre-built binaries for WoodCode v${{ steps.get_version.outputs.version }}
 
-            This is the first working version of the WoodCode encoder/decoder.
+            Changes in this release:
+            - Add a WoodCode CLI
+            - Change number system
+            - Add more special characters
 
             For protocol doc and more info, see the main [README](https://github.com/Haha64142/Wood-Code/blob/main/README.md) for details.
 
