@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CPACK_PACKAGE_NAME "WoodCode")
 set(CPACK_PACKAGE_VERSION "1.4.0")
-set(CPACK_GENERATOR "ZIP")
+set(CPACK_GENERATOR "ZIP;TGZ")
 include(CPack)
 
 # Set default build type to Debug if not specified
