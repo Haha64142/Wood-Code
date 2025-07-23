@@ -1,12 +1,12 @@
-#include "woodcode.h"
-
-#include <iostream>
 #include <vector>
 #include <ctime>
 #include <unordered_map>
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <random>
+
+#include "woodcode.h"
 
 // ================ WoodCodeUtils ================
 
@@ -223,11 +223,22 @@ int WoodCode::getDateOffset(const std::string &date) const
 
 Result<std::string> WoodCode::encodeData(const std::string &input, const int &dateOffset) const
 {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 99);
+
     std::string encodedString = "";
+    int salt = 0;
 
     // Loop through each character in the input string
-    for (size_t i = 0; i < input.length(); ++i)
+    for (size_t i = 0, chunks = 0; i < input.length(); ++i, ++chunks)
     {
+        if (chunks % 10 == 0)
+        {
+            salt = dist(gen);
+            encodedString += std::to_string(500 + salt);
+        }
+
         char currentChar = input.at(i);
         int value = 0;
         std::string valueString;
@@ -276,6 +287,7 @@ Result<std::string> WoodCode::encodeData(const std::string &input, const int &da
 
         // Add dateOffset
         value += dateOffset;
+        value += salt;
 
         // Format to a 3 digit string
         valueString = std::to_string(value);
@@ -310,10 +322,22 @@ Result<std::string> WoodCode::decodeData(const std::string &input, const int &da
     }
 
     // Subtract dateOffset from each chunk
-    for (int &value : inputChunks)
+    for (size_t i = 0; i < inputChunks.size(); ++i)
     {
+        int &value = inputChunks.at(i);
+
+        if (i % 11 == 0)
+        {
+            if (value < 500 || value > 599)
+            {
+                return Result<std::string>::Err("Invalid chunk:" + std::to_string(value));
+            }
+
+            continue;
+        }
+
         value -= dateOffset;
-        if (value < 0 || value > 499)
+        if (value < 0 || value > 599)
         {
             return Result<std::string>::Err("Invalid value after date offset: " + std::to_string(value));
         }
@@ -321,15 +345,32 @@ Result<std::string> WoodCode::decodeData(const std::string &input, const int &da
 
     std::string decodedString = "";
 
+    int salt = 0;
+
     // Loop through each value in inputChunks
-    for (int &chunk : inputChunks)
+    for (size_t i = 0; i < inputChunks.size(); ++i)
     {
+        int &chunk = inputChunks.at(i);
+
+        if (i % 11 == 0)
+        {
+            salt = chunk - 500;
+            if (salt < 0 || salt > 99)
+            {
+                return Result<std::string>::Err("Invalid chunk:" + std::to_string(chunk));
+            }
+            continue;
+        }
+        else
+        {
+            chunk -= salt;
+        }
+
         // Get first digit, then remove it (172 -> firstDigit = 1, value = 72)
         int firstDigit = chunk / 100;
         int value = chunk % 100; // 203 -> 3
 
         std::string decodedChunk;
-
         // Check firstDigit
         switch (firstDigit)
         {
