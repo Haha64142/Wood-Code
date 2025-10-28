@@ -123,7 +123,6 @@ int main()
             std::cerr << std::endl
                       << "Invalid Option" << std::endl
                       << std::endl;
-            continue;
         }
     }
 

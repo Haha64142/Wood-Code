@@ -313,8 +313,9 @@ int main(int argc, char *argv[])
         WoodCode wc; // Initialize WoodCode with default keys and values
         if (!wc.initialized)
         {
-            std::cerr << "Error initializing WoodCode. Please download the latest version\n";
-            std::cerr << "or submit a bug report at https://github.com/Haha64142/Wood-Code/issues\n";
+            std::cerr << wc.initialized.message
+                      << "\n\nError initializing WoodCode. Please download the latest version\n"
+                      << "or submit a bug report at https://github.com/Haha64142/Wood-Code/issues\n";
             return 1;
         }
 

@@ -32,6 +32,7 @@ struct SimpleResult
     bool isError() const { return status == ResultCode::Error; }
 
     // Treat the result like a bool
+    // Success and Warning return true, Error return false
     explicit operator bool() const
     {
         return status != ResultCode::Error;
@@ -62,6 +63,7 @@ struct Result
     bool isError() const { return status == ResultCode::Error; }
 
     // Treat the result like a bool
+    // Success and Warning return true, Error return false
     explicit operator bool() const
     {
         return status != ResultCode::Error;

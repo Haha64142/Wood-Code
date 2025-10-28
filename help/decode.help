@@ -5,7 +5,7 @@ Decode a WoodCode string or a file of codes using WoodCode v1.3.5.
 
 Arguments:
   <text>               The WoodCode string you want to decode
-  -f, --file <file>    Path to a filewith one code per line
+  -f, --file <file>    Path to a file with one code per line
                        Each line will be encoded separately
 
 Use 'woodcode encode' to encode text.
