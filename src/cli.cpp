@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     }
     else if (command == "-v" || command == "--version")
     {
-        std::cout << "WoodCode CLI v1.4.0-dev\n"
+        std::cout << "WoodCode CLI v1.4.0\n"
                   << "https://github.com/Haha64142/Wood-Code\n";
         return 0;
     }

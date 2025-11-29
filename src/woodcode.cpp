@@ -149,11 +149,11 @@ Result<std::string> WoodCode::decode(std::string input) const
                                     std::to_string(version % 100);
         if (version < 10400)
         {
-            return Result<std::string>::Err("Version: " + versionString + " is too old, please use WoodCode v1.4.0-dev or download an older decoder");
+            return Result<std::string>::Err("Version: " + versionString + " is too old, please use WoodCode v1.4.0 or download an older decoder");
         }
         else if (version > 10400)
         {
-            return Result<std::string>::Err("Version: " + versionString + " is too new, please use WoodCode v1.4.0-dev or download the latest decoder");
+            return Result<std::string>::Err("Version: " + versionString + " is too new, please use WoodCode v1.4.0 or download the latest decoder");
         }
 
         return Result<std::string>::Err("How the hell did you manage to get here.\nPlease download the latest version or submit a bug report at https://github.com/Haha64142/Wood-Code/issues");

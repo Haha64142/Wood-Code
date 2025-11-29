@@ -32,7 +32,7 @@ void test_decode_old_version()
 void test_decode_new_version()
 {
     WoodCode code;
-    auto result = code.decode("W10306abc123");
+    auto result = code.decode("W10401abc123");
     assert(result.isError());
     assert(result.message.find("too new") != std::string::npos);
 }

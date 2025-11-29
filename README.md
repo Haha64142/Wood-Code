@@ -1,7 +1,7 @@
 # WoodCode
 
-**Most Recent Stable Version**: `v1.3.5`\
-**Latest Devolpment Version**: `v1.4.0-dev`\
+**Most Recent Stable Version**: `v1.4.0`\
+**Latest Devolpment Version**: `v1.4.0`\
 **Author**: Paul ([@Haha64142](https://github.com/Haha64142))
 
 WoodCode is a custom, date-based encoding system for obfuscating strings. It supports letters, numbers, and select special characters, with output that varies based on the current date. The system is designed to be compact, and extensible.
@@ -79,10 +79,10 @@ Executables will be placed in:
 Would you like to Encode [e], Decode [d], Help [h], or Quit [q]? e
 Enter text to encode: Hello World!
 
-Encoded text: W10305095180175175187469085187199175177467071525
+Encoded text: W10400502154239234234246528144246258234540274564112925
 
 Would you like to Encode [e], Decode [d], Help [h], or Quit [q]? d
-Enter text to decode: W10305095180175175187469085187199175177467071525
+Enter text to decode: W10400502154239234234246528144246258234540274564112925
 
 Decoded text: Hello World!
 ```
@@ -97,7 +97,7 @@ Print Usage and Commands
 ```bash
 ./woodcode --help        # Shows Usage
 ./woodcode encode 'Hello World!'
-./woodcode decode W10305095180175175187469085187199175177467071525
+./woodcode decode W10400579231316311311323605221323335311538272562112925
 ```
 
 > 💡 **Tip**: Use quotes around inputs with spaces or special characters.

@@ -26,6 +26,9 @@ endif()
 add_library(woodcode_lib src/woodcode.cpp)
 target_include_directories(woodcode_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
+set(STATIC_GCC_LIBS_FLAGS "-static-libgcc" "-static-libstdc++")
+target_link_options(woodcode_lib PUBLIC ${STATIC_GCC_LIBS_FLAGS})
+
 # CLI executable
 add_executable("woodcode" src/cli.cpp)
 target_link_libraries("woodcode" PRIVATE woodcode_lib)
