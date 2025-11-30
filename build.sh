@@ -1,20 +1,5 @@
 #! /usr/bin/env bash
 
-# Usage:
-# 
-#   ./build.sh
-#   ./build.sh --help
-#   ./build.sh --reset
-#   ./build.sh --cmake-build <BuildType
-# 
-# Run without parameters to use the default build (Release)
-# 
-# Options:
-# 
-#   --help                          Shows this help text and exits
-#   --reset                         Deletes the build directory
-#   --cmake-build <BuildType>       Builds using the build type (Release | Debug | RelWithDebInfo | MinSizeRel)
-
 set -e
 set -o pipefail
 
@@ -29,33 +14,40 @@ show_help() {
     echo "Usage:"
     echo ""
     echo "  $SCRIPT_NAME"
-    echo "  $SCRIPT_NAME --help"
-    echo "  $SCRIPT_NAME --reset"
-    echo "  $SCRIPT_NAME --cmake-build Debug"
+    echo "  $SCRIPT_NAME [options]"
     echo ""
     echo "Run without parameters to use the default build (Release)"
     echo ""
     echo "Options:"
     echo ""
-    echo "  --help                          Shows this help text and exits"
-    echo "  --reset                         Deletes the build directory"
-    echo "  --cmake-build (Build Type)      Builds using the build type (Release | Debug | RelWithDebInfo | MinSizeRel)"
+    echo "  -h, --help                      Shows this help text and exits"
+    echo "  -r, --reset                     Deletes the build directory"
+    echo "  -b, --cmake-build <build_type>  Builds using the build type (Release | Debug | RelWithDebInfo | MinSizeRel)"
+    echo "  -v, --verbose                   Uses verbose output"
     echo ""
     exit 0
 }
 
-case "$1" in
-    --help)
+BUILD_TYPE="Release"
+BUILD_DIR="build/Release"
+while [ $# -gt 0 ]; do
+    case "$1" in
+    "-v" | "--verbose")
+        CONFIGURE_VERBOSE_FLAG="--log-level=VERBOSE"
+        BUILD_VERBOSE_FLAG="-v"
+        shift
+        ;;
+    "--help" | "-h")
         show_help
         exit 0
         ;;
-    --reset)
+    "--reset" | "-r")
         echo "Deleting build directory..."
         rm -rf build
         echo "Build directory removed"
         exit 0
         ;;
-    --cmake-build)
+    "--cmake-build" | "-b")
         if [ -z "$2" ]; then
             echo "Error: No build type provided for --cmake-build"
             echo "Usage: $SCRIPT_NAME --cmake-build Debug"
@@ -65,16 +57,13 @@ case "$1" in
         BUILD_DIR="build/$BUILD_TYPE"
         shift 2
         ;;
-    "")
-        BUILD_TYPE="Release"
-        BUILD_DIR="build/Release"
-        ;;
     *)
         echo "Unknown option: $1"
         echo "Use '$SCRIPT_NAME --help' for usage."
         exit 1
         ;;
-esac
+    esac
+done
 
 # Check cmake and ninja
 if ! cmake --version >/dev/null 2>&1; then
@@ -102,11 +91,11 @@ echo "  Build Dir: $BUILD_DIR"
 
 echo ""
 echo "============= Configuring ============="
-cmake -S . -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -G Ninja
+cmake -S . -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -G Ninja $CONFIGURE_VERBOSE_FLAG
 
 echo ""
 echo "============= Building ============="
-cmake --build "$BUILD_DIR"
+cmake --build "$BUILD_DIR" $BUILD_VERBOSE_FLAG
 
 echo ""
 echo "Build complete: $BUILD_TYPE"
