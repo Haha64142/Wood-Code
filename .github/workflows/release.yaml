@@ -48,6 +48,8 @@ jobs:
             Changes in this release:
             - Add dencoding/decoding from multi-line files
             - Add random salt to each chunk
+            - Compile using '-static' for users without c++ compiler installed
+            - Update to c++20 for better date handling
 
             For protocol doc and more info, see the main [README](https://github.com/Haha64142/Wood-Code/blob/main/README.md) for details.
 

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(WoodCode)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -26,22 +26,21 @@ endif()
 add_library(woodcode_lib src/woodcode.cpp)
 target_include_directories(woodcode_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-set(STATIC_GCC_LIBS_FLAGS "-static-libgcc" "-static-libstdc++")
-target_link_options(woodcode_lib PUBLIC ${STATIC_GCC_LIBS_FLAGS})
-
 # CLI executable
 add_executable("woodcode" src/cli.cpp)
-target_link_libraries("woodcode" PRIVATE woodcode_lib)
-set_target_properties(woodcode PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-install(TARGETS woodcode RUNTIME DESTINATION bin)
 
 # Main executable (Non-CLI, less powerful)
 add_executable("WoodCodeApp" src/main.cpp)
-target_link_libraries("WoodCodeApp" PRIVATE woodcode_lib)
-set_target_properties(WoodCodeApp PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-install(TARGETS WoodCodeApp RUNTIME DESTINATION bin)
+set(CMAKE_CXX_FLAGS "-static")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+
+foreach(target woodcode WoodCodeApp)
+    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    install(TARGETS ${target} RUNTIME DESTINATION bin)
+    target_link_libraries(${target} PRIVATE woodcode_lib)
+    target_link_options(${target} PRIVATE)
+endforeach()
 
 # Get help files
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/help")

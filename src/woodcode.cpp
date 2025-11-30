@@ -1,10 +1,9 @@
 #include <vector>
-#include <ctime>
 #include <unordered_map>
 #include <string>
-#include <sstream>
-#include <iomanip>
 #include <random>
+#include <chrono>
+#include <format>
 
 #include "woodcode.h"
 
@@ -43,14 +42,9 @@ int WoodCodeUtils::convertToBase(int num, int base)
 
 std::string WoodCodeUtils::getDate()
 {
-    time_t now = time(0);
-    tm *localTime = localtime(&now);
-
-    char dateStr[7];
-    strftime(dateStr, 7, "%m%d%y", localTime);
-
-    std::string outputDate = dateStr;
-    return outputDate;
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::chrono::local_time localTime = std::chrono::current_zone()->to_local(now);
+    return std::format("{:%m%d%y}", localTime);
 }
 
 std::string WoodCodeUtils::escapeChar(char c)
@@ -70,7 +64,7 @@ std::string WoodCodeUtils::escapeChar(char c)
         {' ', "' ' (space)"}};
 
     // Check if it's in the escape table
-    auto it = escapeTable.find(c);
+    std::unordered_map<char, std::string>::const_iterator it = escapeTable.find(c);
     if (it != escapeTable.end())
     {
         return it->second;
@@ -83,10 +77,7 @@ std::string WoodCodeUtils::escapeChar(char c)
     }
 
     // Fallback: print as hexadecimal (e.g., \x1b)
-    std::ostringstream oss;
-    oss << "\\x" << std::hex << std::setw(2) << std::setfill('0')
-        << static_cast<int>(static_cast<unsigned char>(c));
-    return oss.str();
+    return std::format("\\x{:02x}", static_cast<unsigned char>(c));
 }
 
 std::string WoodCodeUtils::escapeString(const std::string &input)
@@ -202,7 +193,7 @@ Result<char> WoodCode::checkInput(const std::string &input) const
 std::string WoodCode::getValidChars() const
 {
     std::string validChars = "a-z, A-Z, 0-9, and special characters: '";
-    for (const auto &pair : specialCharMap)
+    for (const std::pair<const char, int> &pair : specialCharMap)
     {
         validChars += pair.first; // Add special chars
     }

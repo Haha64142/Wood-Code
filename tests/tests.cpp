@@ -141,7 +141,7 @@ void test_decode_short_strings()
 void test_decode_unicode_chars()
 {
     WoodCode code;
-    std::string unicodeStr = u8"W10400\u03B1\u03B2\u03B3" + std::string("000000"); // Greek letters in payload
+    std::string unicodeStr = "W10400\u03B1\u03B2\u03B3" + std::string("000000"); // Greek letters in payload
     auto result = code.decode(unicodeStr);
     assert(result.isError() || result.isWarning() || result.isOk()); // just test it doesn’t crash
 }
