@@ -23,10 +23,11 @@ Make sure you have the following installed and added to your system's `PATH`:
 
 - [CMake](https://cmake.org/download/) ≥ 3.10
 - [Ninja](https://github.com/ninja-build/ninja/releases) (build system)
-- C++17-compatible compiler
-  - `g++`
-  - `clang++`
-  - `MSVC` (Visual Studio)
+- C++20-compatible compiler
+  - [g++](https://gcc.gnu.org/) ≥ 13.1
+  - [clang++](https://github.com/llvm/llvm-project/releases) ≥ 19
+  - [Visual Studio](https://visualstudio.microsoft.com/downloads/) ≥ 16.11 (≥ 2019)
+  - [XCode](https://developer.apple.com/xcode/) ≥ 15
 
 ---
 
