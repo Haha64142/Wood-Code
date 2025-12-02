@@ -26,7 +26,7 @@ Make sure you have the following installed and added to your system's `PATH`:
 - C++20-compatible compiler
   - [g++](https://gcc.gnu.org/) ≥ 13.1
   - [clang++](https://github.com/llvm/llvm-project/releases) ≥ 19
-  - [Visual Studio](https://visualstudio.microsoft.com/downloads/) ≥ 16.11 (≥ 2019)
+  - [Visual Studio](https://visualstudio.microsoft.com/downloads/) ≥ 16.11 (recommended ≥ 16.11.14)
   - [XCode](https://developer.apple.com/xcode/) ≥ 15
 
 ---

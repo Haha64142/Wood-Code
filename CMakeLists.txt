@@ -2,7 +2,18 @@ cmake_minimum_required(VERSION 3.12)
 
 project(WoodCode)
 
-set(CMAKE_CXX_STANDARD 20)
+if(MSVC)
+    # Can't use the default cmake c++20 version setting
+    if(MSVC_LEGACY)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
+    endif()
+
+else()
+    set(CMAKE_CXX_STANDARD 20)
+endif()
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -32,8 +43,12 @@ add_executable("woodcode" src/cli.cpp)
 # Main executable (Non-CLI, less powerful)
 add_executable("WoodCodeApp" src/main.cpp)
 
-set(CMAKE_CXX_FLAGS "-static")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+endif()
 
 foreach(target woodcode WoodCodeApp)
     set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -42,8 +57,16 @@ foreach(target woodcode WoodCodeApp)
     target_link_options(${target} PRIVATE)
 endforeach()
 
+# For single-config generators
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# For multi-config generators
+foreach(config DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} ${CMAKE_BINARY_DIR}/bin)
+endforeach()
+
 # Get help files
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/help")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/help")
 file(GLOB HELP_FILES "${PROJECT_SOURCE_DIR}/help/*.help")
 
 install(FILES ${HELP_FILES} DESTINATION help)
@@ -54,7 +77,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     foreach(help_file ${HELP_FILES})
         get_filename_component(filename ${help_file} NAME)
-        set(dest "${CMAKE_CURRENT_BINARY_DIR}/help/${filename}")
+        set(dest "${CMAKE_BINARY_DIR}/help/${filename}")
         file(CREATE_LINK ${help_file} ${dest})
     endforeach()
 else()
@@ -63,7 +86,7 @@ else()
     foreach(help_file ${HELP_FILES})
         get_filename_component(filename ${help_file} NAME)
         configure_file(${help_file}
-            "${CMAKE_CURRENT_BINARY_DIR}/help/${filename}"
+            "${CMAKE_BINARY_DIR}/help/${filename}"
             COPYONLY)
     endforeach()
 endif()
