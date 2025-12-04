@@ -105,7 +105,7 @@ void printHelp(const std::filesystem::path &exeDir, Command command)
 
 int main(int argc, char *argv[])
 {
-    std::filesystem::path exeDir = std::filesystem::absolute(argv[0]).parent_path(); // .../build/Release/bin/
+    std::filesystem::path exeDir = std::filesystem::absolute(argv[0]).lexically_normal().parent_path(); // .../build/Release/bin/
 
     if (argc < 2)
     {

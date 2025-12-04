@@ -22,6 +22,10 @@ set(CPACK_PACKAGE_VERSION "1.4.0")
 set(CPACK_GENERATOR "ZIP;TGZ")
 include(CPack)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/lib>")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/lib>")
+
 # Set default build type to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
@@ -51,18 +55,9 @@ else()
 endif()
 
 foreach(target woodcode WoodCodeApp)
-    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-    install(TARGETS ${target} RUNTIME DESTINATION bin)
+    install(TARGETS ${target} RUNTIME)
     target_link_libraries(${target} PRIVATE woodcode_lib)
     target_link_options(${target} PRIVATE)
-endforeach()
-
-# For single-config generators
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# For multi-config generators
-foreach(config DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} ${CMAKE_BINARY_DIR}/bin)
 endforeach()
 
 # Get help files
