@@ -28,11 +28,8 @@ jobs:
           VERSION="${TAG#release/}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Configure project
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
-
-      - name: Build project
-        run: cmake --build build --config Release
+      - name: Build
+        run: ./build.sh
 
       - name: Package with CPack
         run: cpack --config build/CPackConfig.cmake
@@ -50,6 +47,7 @@ jobs:
             - Add random salt to each chunk
             - Compile using '-static' for users without c++ compiler installed
             - Update to c++20 for better date handling
+            - Update build script
 
             For protocol doc and more info, see the main [README](https://github.com/Haha64142/Wood-Code/blob/main/README.md) for details.
 

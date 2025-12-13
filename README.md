@@ -22,12 +22,14 @@ See the full protocol specification for details:
 Make sure you have the following installed and added to your system's `PATH`:
 
 - [CMake](https://cmake.org/download/) ≥ 3.10
-- [Ninja](https://github.com/ninja-build/ninja/releases) (build system)
+- Build system
+  - [Ninja](https://github.com/ninja-build/ninja/releases) (build system)
 - C++20-compatible compiler
   - [g++](https://gcc.gnu.org/) ≥ 13.1
   - [clang++](https://github.com/llvm/llvm-project/releases) ≥ 19
-  - [Visual Studio](https://visualstudio.microsoft.com/downloads/) ≥ 16.11 (recommended ≥ 16.11.14)
   - [XCode](https://developer.apple.com/xcode/) ≥ 15
+
+Or you can you [Visual Studio](https://visualstudio.microsoft.com/downloads/) ≥ 16.11 (recommended ≥ 16.11.14)
 
 ---
 
@@ -35,9 +37,13 @@ Make sure you have the following installed and added to your system's `PATH`:
 
 Default Build (Release)
 
+When run without any parameters, it will try to find the c++ compiler and build system automatically
+
 ```bash
 ./build.sh
 ```
+
+> 💡 **If using visual studio 16.11.0 - 16.11.13, you have to use the --msvc-legacy option**
 
 Show Usage
 
@@ -46,7 +52,7 @@ Show Usage
 ```
 
 > 💡 **Windows users without Bash:**\
-> You can install Bash using [Git for Windows](https://gitforwindows.com) (recommended), [MSYS2](https://www.msys2.org/), [Cygwin](https://www.cygwin.com/), or [WSL](https://learn.microsoft.com/en-us/windows/wsl/).\
+> You can install Bash using [Git for Windows](https://gitforwindows.com) (recommended), [MSYS2](https://www.msys2.org/) (also recommended), [Cygwin](https://www.cygwin.com/), or [WSL](https://learn.microsoft.com/en-us/windows/wsl/).\
 > Then run `build.cmd` inside Command Prompt or `./build.sh` inside the installed terminal
 
 ---
@@ -54,7 +60,7 @@ Show Usage
 ### 🧱 Manual Build
 
 ```bash
-cmake -S . -B build/Release -DCMAKE_BUILD_TYPE=Release -G Ninja
+cmake -S . -B build/Release -DCMAKE_BUILD_TYPE=Release
 cmake --build build/Release
 ```
 

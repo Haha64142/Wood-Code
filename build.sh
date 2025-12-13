@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/bin/bash
 
 set -o pipefail
 
@@ -27,7 +27,7 @@ show_help() {
     echo "  $SCRIPT_NAME"
     echo "  $SCRIPT_NAME [options]"
     echo ""
-    echo "Run without parameters to use the default build (Release)"
+    echo "Run without parameters to use the default build (Release) and search for a build system"
     echo ""
     echo "Options:"
     echo ""
@@ -133,7 +133,8 @@ if [ -z "$GENERATOR" ]; then
     if ninja --version >/dev/null 2>&1; then
         GENERATOR="Ninja"
     elif msbuild --version >/dev/null 2>&1 || msbuild.exe --version >/dev/null 2>&1; then
-        version=$(msbuild --version 2>/dev/null | sed -n '2p' | awk -F '.' '{print $1}' || msbuild.exe --version 2>/dev/null | sed -n '2p' | awk -F '.' '{print $1}')
+        version=$(msbuild --version 2>/dev/null || msbuild.exe --version)
+        version=$(echo "$version" | grep -P -o '^\d{2}(?=.)')
         case "$version" in
         "16")
             GENERATOR="Visual Studio 16 2019"
@@ -173,7 +174,7 @@ fi
 if [ -n "$MSVC_LEGACY" ]; then
     CONFIGURE_OPTIONS+=("-DMSVC_LEGACY=1")
 fi
-cmake "${CONFIGURE_OPTIONS[@]}" || ($SCRIPT_DIR/build.sh -r && exit 1)
+cmake "${CONFIGURE_OPTIONS[@]}" || exit 1
 
 echo ""
 echo "============= Building ============="
@@ -181,7 +182,7 @@ BUILD_OPTIONS=("--build" "$SCRIPT_DIR/build/$BUILD_TYPE" --config "$BUILD_TYPE")
 if [ -n "$BUILD_VERBOSE_FLAG" ]; then
     BUILD_OPTIONS+=("$BUILD_VERBOSE_FLAG")
 fi
-cmake "${BUILD_OPTIONS[@]}"
+cmake "${BUILD_OPTIONS[@]}" || exit 1
 
 echo ""
 echo "Build complete: $BUILD_TYPE"

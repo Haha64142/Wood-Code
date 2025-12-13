@@ -5,6 +5,7 @@ project(WoodCode)
 if(MSVC)
     # Can't use the default cmake c++20 version setting
     if(MSVC_LEGACY)
+        # For 16.11.0 - 16.11.13
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
