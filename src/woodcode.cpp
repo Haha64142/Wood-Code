@@ -5,6 +5,11 @@
 #include <chrono>
 #include <format>
 
+#ifndef HAS_TZDB
+// For strftime
+#include <ctime>
+#endif
+
 #include "woodcode.h"
 
 // ================ WoodCodeUtils ================
@@ -43,8 +48,16 @@ int WoodCodeUtils::convertToBase(int num, int base)
 std::string WoodCodeUtils::getDate()
 {
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    std::chrono::local_time localTime = std::chrono::current_zone()->to_local(now);
+#ifdef HAS_TZDB
+    std::chrono::local_time<std::chrono::system_clock::duration> localTime = std::chrono::current_zone()->to_local(now);
     return std::format("{:%m%d%y}", localTime);
+#else
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    char buf[7];
+    // std::format can't do std::tm
+    std::strftime(buf, sizeof(buf), "%m%d%y", std::localtime(&t));
+    return buf;
+#endif
 }
 
 std::string WoodCodeUtils::escapeChar(char c)

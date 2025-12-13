@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
+include(CheckCXXSourceCompiles)
 
 project(WoodCode)
 
@@ -26,6 +27,23 @@ include(CPack)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/lib>")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/lib>")
+
+# Check if the compiler supports IANA TZDB with current_zone()
+set(TZDB_TEST "
+#include <chrono>
+
+int main()
+{
+    std::chrono::current_zone();
+    return 0;
+}
+")
+
+check_cxx_source_compiles("${TZDB_TEST}" HAS_TZDB)
+
+if(HAS_TZDB)
+    add_compile_definitions(HAS_TZDB)
+endif()
 
 # Set default build type to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)

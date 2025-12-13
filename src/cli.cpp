@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <vector>
+#include <sstream>
 
 #include "woodcode.h"
 
