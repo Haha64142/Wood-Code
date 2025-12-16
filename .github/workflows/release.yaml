@@ -34,11 +34,6 @@ jobs:
         shell: bash
         run: ./build.sh --verbose
 
-      - name: View Dir Tree in Powershell
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          dir -R
-
       - name: Package with CPack
         shell: bash
         run: cpack --config build/Release/CPackConfig.cmake --verbose
