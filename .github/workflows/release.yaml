@@ -1,6 +1,8 @@
 name: Build and Release
 
 on:
+  workflow_dispatch:
+
   push:
     tags:
       - "release/*"
@@ -29,10 +31,17 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Build
-        run: ./build.sh
+        shell: bash
+        run: ./build.sh --verbose
+
+      - name: View Dir Tree in Powershell
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          dir -R
 
       - name: Package with CPack
-        run: cpack --config build/Release/CPackConfig.cmake
+        shell: bash
+        run: cpack --config build/Release/CPackConfig.cmake --verbose
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
