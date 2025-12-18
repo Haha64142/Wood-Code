@@ -170,11 +170,11 @@ int main(int argc, char *argv[])
     }
     else if (command == "app")
     {
-        std::string appCommand = "\"" + (exeDir / "WoodCodeApp.exe").string() + "\"";
+        std::string appCommand = "\"" + (exeDir / "WoodCodeApp").string() + "\"";
         int result = std::system(appCommand.c_str());
         if (result != 0)
         {
-            std::cerr << "Error running WoodCodeApp.exe. Please ensure it exists next to woodcode.exe\n";
+            std::cerr << "Error running WoodCodeApp. Please ensure it exists next to woodcode\n";
             return 1;
         }
         return 0;

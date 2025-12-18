@@ -4,7 +4,7 @@ If you prefer not to use the command line, you can run the WoodCodeApp executabl
 WoodCodeApp.exe or run the command 'woodcode app'.
 
 Commands:
-  app             Run the WoodCodeApp.exe if it exists
+  app             Run the WoodCodeApp if it exists
   encode          Encode a string or the contents of a file
   decode          Decode a string or the contents of a file
   help            Show this help message and exit
