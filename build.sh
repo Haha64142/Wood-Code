@@ -36,6 +36,7 @@ show_help() {
     echo "  -m, --msvc <version>            Uses MSVC (Visual Studio) to build"
     echo "                                  Run without a version to see available versions"
     echo "  -l, --msvc-legacy               For use with Visual Studio 2019, 16.11.0 - 16.11.13"
+    echo "  -d, --debug                     Build the debug version"
     echo "  -b, --cmake-build <build_type>  Builds using the build type (Release | Debug | RelWithDebInfo | MinSizeRel)"
     echo "  -g, --generator <generator>     Use the specified generator>"
     echo "  -v, --verbose                   Uses verbose output"
@@ -56,7 +57,7 @@ while [ $# -gt 0 ]; do
         ;;
     "--reset" | "-r")
         echo "Deleting build directory..."
-        rm -rf $SCRIPT_DIR/build
+        rm -rf "$SCRIPT_DIR/build"
         echo "Build directory removed"
         exit 0
         ;;
@@ -99,7 +100,10 @@ while [ $# -gt 0 ]; do
         MSVC_LEGACY=1
         shift
         ;;
-
+    "--debug" | "-d")
+        BUILD_TYPE="Debug"
+        shift
+        ;;
     "--cmake-build" | "-b")
         if [ -z "$2" ]; then
             echo "Error: No build type provided for --cmake-build"
@@ -184,7 +188,10 @@ if [ -n "$BUILD_VERBOSE_FLAG" ]; then
 fi
 cmake "${BUILD_OPTIONS[@]}" || exit 1
 
+ln -sf "$SCRIPT_DIR/build/$BUILD_TYPE/compile_commands.json" "$SCRIPT_DIR/build/compile_commands.json"
+
 echo ""
 echo "Build complete: $BUILD_TYPE"
+echo "Compile commands linked for $BUILD_TYPE"
 echo "Executable files are located in:"
 echo "  $SCRIPT_DIR/build/$BUILD_TYPE/bin/"

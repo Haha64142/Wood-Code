@@ -1,76 +1,68 @@
-// Disclaimer, this file was generated with ChatGPT because I was too lazy to write my own testing program
-// All other files were written by me. The only thing ChatGPT did on those was help with the error and help text
+// Disclaimer, this file was generated with ChatGPT because I was too lazy to write my own testing
+// program. All other files were written by me. The only thing ChatGPT did on those was help with
+// the error and help text
 
-#include <iostream>
-#include <cassert>
 #include "../include/woodcode.h" // adjust path if needed
+#include <cassert>
+#include <iostream>
 
-void test_decode_invalid_length()
-{
+void test_decode_invalid_length() {
     WoodCode code;
     auto result = code.decode("123"); // too short
     assert(result.isError());
     assert(result.message.find("Invalid code") != std::string::npos);
 }
 
-void test_decode_invalid_header_format()
-{
+void test_decode_invalid_header_format() {
     WoodCode code;
     auto result = code.decode("Z10400abc123"); // wrong start char
     assert(result.isError());
     assert(result.message.find("Invalid header") != std::string::npos);
 }
 
-void test_decode_old_version()
-{
+void test_decode_old_version() {
     WoodCode code;
     auto result = code.decode("W10304abc123");
     assert(result.isError());
     assert(result.message.find("too old") != std::string::npos);
 }
 
-void test_decode_new_version()
-{
+void test_decode_new_version() {
     WoodCode code;
-    auto result = code.decode("W10401abc123");
+    auto result = code.decode("W10402abc123");
     assert(result.isError());
     assert(result.message.find("too new") != std::string::npos);
 }
 
-void test_decode_empty_payload()
-{
+void test_decode_empty_payload() {
     WoodCode code;
-    auto result = code.decode("W10400071425"); // valid version + date, no payload
+    auto result = code.decode("W10401071425"); // valid version + date, no payload
     assert(result.isWarning());
     assert(result.message.find("Decoded result is empty") != std::string::npos);
 }
 
-void test_encode_invalid_char()
-{
+void test_encode_invalid_char() {
     WoodCode code;
     auto result = code.encode("Hello\nWorld");
     assert(result.isError());
     assert(result.message.find("not a valid char") != std::string::npos);
 }
 
-void test_decode_corrupted_version_digits()
-{
+void test_decode_corrupted_version_digits() {
     WoodCode code;
     auto result = code.decode("W10x05abc123"); // 'x' is invalid
     assert(result.isError());
     assert(result.message.find("Invalid header") != std::string::npos);
 }
 
-void test_encode_empty_string()
-{
+void test_encode_empty_string() {
     WoodCode code;
     auto result = code.encode(""); // should be valid
     assert(result.isOk());
-    assert(result.value.find("W10400") == 0); // still encodes
+    assert(result.value.find("W10401") == 0); // still encodes
 }
 
-void test_decode_encoded_empty_string()
-{
+void test_decode_encoded_empty_string() {
     WoodCode code;
     std::string emptyCode = code.encode("").value;
     auto result = code.decode(emptyCode);
@@ -79,24 +71,26 @@ void test_decode_encoded_empty_string()
 }
 
 // ChatGPT being special
-void test_decode_how_did_you_get_here()
-{
+void test_decode_how_did_you_get_here() {
     WoodCode code;
-    // Valid W-prefix, valid digits, but version == 10400 (same as expected) gets rejected below for some edge reason
-    // So let’s try slipping past the outer check but not triggering a version error
+    // Valid W-prefix, valid digits, but version == 10400 (same as expected) gets rejected below for
+    // some edge reason So let’s try slipping past the outer check but not triggering a version
+    // error
 
-    // This should not happen naturally, but let's bypass the exact header match to force the unreachable fallback.
-    std::string input = "W10400badc0d"; // Skips the exact-match check, passes the numeric version check
+    // This should not happen naturally, but let's bypass the exact header match to force the
+    // unreachable fallback.
+    std::string input =
+        "W10401badc0d"; // Skips the exact-match check, passes the numeric version check
 
     // We'll patch the version logic to force it to run to the unreachable line:
-    // Pretend it's W10400 but not exactly the same string (maybe by whitespace or something corrupt)
-    auto result = code.decode("W10400\n000000"); // Should fail inside and fall through
+    // Pretend it's W10400 but not exactly the same string (maybe by whitespace or something
+    // corrupt)
+    auto result = code.decode("W10401\n000000"); // Should fail inside and fall through
     assert(result.isError());
     assert(result.message.find("How the hell") == std::string::npos);
 }
 
-void test_encode_embedded_null()
-{
+void test_encode_embedded_null() {
     WoodCode code;
     std::string strWithNull = std::string("abc\0def", 7);
     auto result = code.encode(strWithNull);
@@ -104,8 +98,7 @@ void test_encode_embedded_null()
     assert(result.message.find("not a valid char") != std::string::npos);
 }
 
-void test_decode_stoi_exception()
-{
+void test_decode_stoi_exception() {
     WoodCode code;
     // corrupt version number to cause stoi failure (non-digit chars)
     auto result = code.decode("W10abc000000");
@@ -113,8 +106,7 @@ void test_decode_stoi_exception()
     assert(result.message.find("Invalid header") != std::string::npos);
 }
 
-void test_encode_large_string()
-{
+void test_encode_large_string() {
     WoodCode code;
     std::string large(10'000'000, 'A'); // 10 million 'A's
     auto result = code.encode(large);
@@ -123,35 +115,33 @@ void test_encode_large_string()
     // (This is a placeholder to show test ran — you might customize expected behavior)
 }
 
-void test_decode_short_strings()
-{
+void test_decode_short_strings() {
     WoodCode code;
 
     auto r1 = code.decode("W1030"); // too short
     assert(r1.isError());
 
-    auto r2 = code.decode("W10400123"); // less than 12 chars but looks closer
+    auto r2 = code.decode("W10401123"); // less than 12 chars but looks closer
     assert(r2.isError());
 
-    auto r3 = code.decode("W10400123456"); // exactly 12 chars, valid length but maybe invalid payload
+    auto r3 =
+        code.decode("W10401123456"); // exactly 12 chars, valid length but maybe invalid payload
     // Can't guarantee error or not here, just check Result is valid
     assert(r3.message.find("Decoded result is empty") != std::string::npos);
 }
 
-void test_decode_unicode_chars()
-{
+void test_decode_unicode_chars() {
     WoodCode code;
-    std::string unicodeStr = "W10400\u03B1\u03B2\u03B3" + std::string("000000"); // Greek letters in payload
+    std::string unicodeStr =
+        "W10401\u03B1\u03B2\u03B3" + std::string("000000"); // Greek letters in payload
     auto result = code.decode(unicodeStr);
     assert(result.isError() || result.isWarning() || result.isOk()); // just test it doesn’t crash
 }
 
-void test_encode_control_chars()
-{
+void test_encode_control_chars() {
     WoodCode code;
     std::string controls = "\t\b\a\x1B"; // tab, backspace, bell, escape
-    for (char c : controls)
-    {
+    for (char c : controls) {
         std::string s(1, c);
         auto res = code.encode(s);
         assert(res.isError());
@@ -159,31 +149,51 @@ void test_encode_control_chars()
     }
 }
 
-void test_decode_corrupt_header_footer()
-{
+void test_decode_corrupt_header_footer() {
     WoodCode code;
 
     // Header partially missing
-    auto r1 = code.decode("W103" + std::string("05123456")); // I have no clue what ChatGPT thinks this is gonna do
+    auto r1 = code.decode(
+        "W103" + std::string("05123456")); // I have no clue what ChatGPT thinks this is gonna do
     assert(r1.message.find("Decoded result is empty"));
 
     // Date substring corrupt (non-numeric)
-    std::string input = "W10400" + std::string("123456") + "ABCDEF";
+    std::string input = "W10401" + std::string("123456") + "ABCDEF";
     auto r2 = code.decode(input);
     assert(r2.message.find("Invalid code") != std::string::npos);
 }
 
-void test_decode_substr_out_of_range()
-{
+void test_decode_substr_out_of_range() {
     WoodCode code;
     // input length less than 12 to test substr boundaries
     auto r = code.decode("W103");
     assert(r.isError());
 }
 
+void test_complex_encode() {
+    WoodCode code;
+    auto r1 = code.encode("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.!? '\"/\\-_+:*@#$ "
+                          "%&1 23 456 7890 1234567890");
+    assert(r1.isOk());
+
+    auto r2 = code.decode(r1.value);
+    assert(r2.isOk() && r2.value == "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.!? "
+                                    "'\"/\\-_+:*@#$ %&1 23 456 7890 1234567890");
+}
+
+void test_complex_decode() {
+    WoodCode code;
+    auto r =
+        code.decode("W10401546252255258264267273276282285253548258264267270276279285288256259578295"
+                    "298304307310316184187190196523144150153159162130133139142145591219222228231199"
+                    "202208211217220504136142510511512513514515516517559573574575576577578579580581"
+                    "569585608609492595414595436497595469514410524332354376398410042526");
+    assert(r.isOk() && r.value == "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.!? "
+                                  "'\"/\\-_+:*@#$ %&1 23 456 7890 1234567890");
+}
+
 // Read disclaimer at the top
-int main()
-{
+int main() {
     test_decode_invalid_length();
     test_decode_invalid_header_format();
     test_decode_old_version();
@@ -191,7 +201,6 @@ int main()
     test_decode_empty_payload();
     test_encode_invalid_char();
 
-    // Bonus tests
     test_decode_corrupted_version_digits();
     test_encode_empty_string();
     test_decode_encoded_empty_string();
@@ -205,6 +214,9 @@ int main()
     test_encode_control_chars();
     test_decode_corrupt_header_footer();
     test_decode_substr_out_of_range();
+
+    test_complex_encode();
+    test_complex_decode();
 
     std::cout << "All tests passed!\n";
     return 0;

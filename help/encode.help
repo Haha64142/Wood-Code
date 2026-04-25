@@ -1,7 +1,7 @@
 Usage: woodcode encode <text>
        woodcode encode [-f | --file] <file>
 
-Encode a string or file of strings into WoodCode v1.3.5.
+Encode a string or file of strings into WoodCode v1.4.1.
 
 Arguments:
   <text>               The text you want to encode

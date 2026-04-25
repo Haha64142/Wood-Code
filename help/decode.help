@@ -1,7 +1,7 @@
 Usage: woodcode decode <text>
        woodcode decode [-f | --file] <file>
 
-Decode a WoodCode string or a file of codes using WoodCode v1.3.5.
+Decode a WoodCode string or a file of codes using WoodCode v1.4.1.
 
 Arguments:
   <text>               The WoodCode string you want to decode

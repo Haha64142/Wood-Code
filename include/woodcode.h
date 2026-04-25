@@ -1,17 +1,15 @@
 #pragma once
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
-enum class ResultCode
-{
+enum class ResultCode {
     Success,
     Warning,
     Error,
 };
 
-struct SimpleResult
-{
+struct SimpleResult {
     ResultCode status;
     std::string message;
 
@@ -33,15 +31,10 @@ struct SimpleResult
 
     // Treat the result like a bool
     // Success and Warning return true, Error return false
-    explicit operator bool() const
-    {
-        return status != ResultCode::Error;
-    }
+    explicit operator bool() const { return status != ResultCode::Error; }
 };
 
-template <typename T>
-struct Result
-{
+template <typename T> struct Result {
     ResultCode status;
     T value;
     std::string message;
@@ -52,7 +45,9 @@ struct Result
 
     // Factory: Warning
     // Usage Result::Warn(value, "message")
-    static Result<T> Warn(const T &val, const std::string &msg) { return {ResultCode::Warning, val, msg}; }
+    static Result<T> Warn(const T &val, const std::string &msg) {
+        return {ResultCode::Warning, val, msg};
+    }
 
     // Factory: Error
     // Usage Result::Err("message")
@@ -64,36 +59,32 @@ struct Result
 
     // Treat the result like a bool
     // Success and Warning return true, Error return false
-    explicit operator bool() const
-    {
-        return status != ResultCode::Error;
-    }
+    explicit operator bool() const { return status != ResultCode::Error; }
 };
 
-namespace WoodCodeUtils
-{
-    // Checks if a string only contains digits
-    bool isNum(std::string str);
+namespace WoodCodeUtils {
+// Checks if a string only contains digits
+bool isNum(const std::string &str);
 
-    // Converts a non-printable char into it's escaped version ('\n' -> "\\n")
-    std::string escapeChar(char c);
+// Converts a non-printable char into it's escaped version ('\n' -> "\\n")
+std::string escapeChar(char c);
 
-    // Runs escapeChar() on each character
-    std::string escapeString(const std::string &str);
+// Runs escapeChar() on each character
+std::string escapeString(const std::string &str);
 
-    // Converts a number to the given base and returns result as an int
-    int convertToBase(int num, int base);
+// Converts a number to the given base and returns result as an int
+int convertToBase(int num, int base);
 
-    // Gets the current date in MMDDYY format
-    std::string getDate();
-}
+// Gets the current date in MMDDYY format
+std::string getDate();
+} // namespace WoodCodeUtils
 
-class WoodCode
-{
-public:
+class WoodCode {
+  public:
     // Constructor
     WoodCode(std::string keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ,.!? '\"/\\-_+:*@#$%&",
-             std::string values = "000306121521243033010410131622253134020511142023263200010203040506070809101112131415161718");
+             std::string values = "0003061215212430330104101316222531340205111420232632000102030405"
+                                  "06070809101112131415161718");
 
     SimpleResult initialized;
 
@@ -106,7 +97,7 @@ public:
     // Returns a string of valid characters (For the help menu)
     std::string getValidChars() const;
 
-private:
+  private:
     std::unordered_map<char, int> charMap;
     std::unordered_map<char, int> specialCharMap;
 
