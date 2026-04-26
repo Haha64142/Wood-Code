@@ -47,11 +47,8 @@ jobs:
             This release contains pre-built binaries for WoodCode v${{ steps.get_version.outputs.version }}
 
             Changes in this release:
-            - Add dencoding/decoding from multi-line files
-            - Add random salt to each chunk
-            - Compile using '-static' for users without c++ compiler installed
-            - Update to c++20 for better date handling
-            - Update build script
+            - Fix a few minor issues
+            - Update some dev tools
 
             For protocol doc and more info, see the main [README](https://github.com/Haha64142/Wood-Code/blob/main/README.md) for details.
 

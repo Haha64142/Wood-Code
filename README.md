@@ -1,7 +1,7 @@
 # WoodCode
 
-**Most Recent Stable Version**: `v1.4.0`\
-**Latest Devolpment Version**: `v1.4.0`\
+**Most Recent Stable Version**: `v1.4.1`\
+**Latest Devolopment Version**: `v1.4.1`\
 **Author**: Paul ([@Haha64142](https://github.com/Haha64142))
 
 WoodCode is a custom, date-based encoding system for obfuscating strings. It supports letters, numbers, and select special characters, with output that varies based on the current date. The system is designed to be compact, and extensible.
@@ -11,25 +11,23 @@ See the full protocol specification for details:
 
 ---
 
+## Download pre-built binaries in the [Releases tab](https://github.com/Haha64142/Wood-Code/releases)
+
 ## ⚙️ Build Instructions
-
-### You can download pre-built binaries in the [Releases tab](https://github.com/Haha64142/Wood-Code/releases)
-
----
 
 ### 🔧 Build Prerequisites
 
 Make sure you have the following installed and added to your system's `PATH`:
 
 - [CMake](https://cmake.org/download/) ≥ 3.10
-- Build system
-  - [Ninja](https://github.com/ninja-build/ninja/releases) (build system)
+- Build system (optional)
+  - [Ninja](https://github.com/ninja-build/ninja/releases)
 - C++20-compatible compiler
   - [g++](https://gcc.gnu.org/) ≥ 13.1
   - [clang++](https://github.com/llvm/llvm-project/releases) ≥ 19
   - [XCode](https://developer.apple.com/xcode/) ≥ 15
 
-Or you can you [Visual Studio](https://visualstudio.microsoft.com/downloads/) ≥ 16.11 (recommended ≥ 16.11.14)
+Or you can use [Visual Studio](https://visualstudio.microsoft.com/downloads/) with CMake ≥ 16.11 (recommended at least Visual Studio 2022)
 
 ---
 
@@ -68,6 +66,14 @@ cmake --build build/Release
 
 Executables will be placed in:
 `build/Release/bin/`
+
+---
+
+When manually building, you will probably want to symlink compile_commands.json to the standard location
+
+```bash
+ln -sf build/Release/compile_commands.json build/compile_commands.json
+```
 
 ---
 
