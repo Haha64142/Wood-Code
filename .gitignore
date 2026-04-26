@@ -1,4 +1,11 @@
+# Ignore all build files
 *.exe
 build/**
+
+# Ignore vscode settings
 .vscode/**
-!.vscode/tasks.json
+
+# Ignore all cpack files
+_CPack_Packages/**
+WoodCode-*.zip
+WoodCode-*.tar.gz
