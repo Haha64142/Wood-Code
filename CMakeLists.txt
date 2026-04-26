@@ -4,36 +4,36 @@ include(CheckCXXSourceCompiles)
 project(WoodCode)
 
 if(MSVC)
-    # Can't use the default cmake c++20 version setting
-    if(MSVC_LEGACY)
-        # For 16.11.0 - 16.11.13
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
-    else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
-    endif()
+  # Can't use the default cmake c++20 version setting
+  if(MSVC_LEGACY)
+    # For 16.11.0 - 16.11.13
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
+  endif()
 
 else()
-    set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 20)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(PLATFORM_NAME "macOS"
+  set(PLATFORM_NAME "macOS")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(PLATFORM_NAME "Windows")
+  set(PLATFORM_NAME "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(PLATFORM_NAME "Linux"
+  set(PLATFORM_NAME "Linux")
 else()
-    set(PLATFORM_NAME "${CMAKE_SYSTEM_NAME}")
+  set(PLATFORM_NAME "${CMAKE_SYSTEM_NAME}")
 endif()
 
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" ARCH_RAW)
 
 if(ARCH_RAW MATCHES "x86_64|amd64|x64")
-    set(PLATFORM_ARCH "x86_64")
+  set(PLATFORM_ARCH "x86_64")
 elseif(ARCH_RAW MATCHES "arm64|aarch64")
-    set(PLATFORM_ARCH "arm64")
+  set(PLATFORM_ARCH "arm64")
 else()
-    set(PLATFORM_ARCH "${ARCH_RAW}")
+  set(PLATFORM_ARCH "${ARCH_RAW}")
 endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -42,7 +42,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CPACK_PACKAGE_NAME "WoodCode")
 set(CPACK_PACKAGE_VERSION "1.4.1")
 set(CPACK_GENERATOR "ZIP;TGZ")
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PLATFORM_NAME}-${PLATFORM_ARCH}")
+set(CPACK_PACKAGE_FILE_NAME
+    "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PLATFORM_NAME}-${PLATFORM_ARCH}")
 include(CPack)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>")
@@ -50,7 +51,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/lib>")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/lib>")
 
 # Check if the compiler supports IANA TZDB with current_zone()
-set(TZDB_TEST "
+set(TZDB_TEST
+    "
 #include <chrono>
 
 int main()
@@ -63,19 +65,23 @@ int main()
 check_cxx_source_compiles("${TZDB_TEST}" HAS_TZDB)
 
 if(HAS_TZDB)
-    add_compile_definitions(HAS_TZDB)
+  add_compile_definitions(HAS_TZDB)
 endif()
 
 # Set default build type to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+  set(CMAKE_BUILD_TYPE
+      Debug
+      CACHE STRING "Choose the type of build." FORCE)
 endif()
 
 # Verify build type
 set(SUPPORTED_BUILD_TYPES Debug Release RelWithDebInfo MinSizeRel)
 
 if(NOT CMAKE_BUILD_TYPE IN_LIST SUPPORTED_BUILD_TYPES)
-    message(FATAL_ERROR "\nInvalid build type: ${CMAKE_BUILD_TYPE}\nChoose one of: ${SUPPORTED_BUILD_TYPES}")
+  message(
+    FATAL_ERROR "\nInvalid build type: ${CMAKE_BUILD_TYPE}\nChoose one of: ${SUPPORTED_BUILD_TYPES}"
+  )
 endif()
 
 add_library(woodcode_lib src/woodcode.cpp)
@@ -88,18 +94,18 @@ add_executable("woodcode" src/cli.cpp)
 add_executable("WoodCodeApp" src/main.cpp)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
 elseif(APPLE)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 endif()
 
 foreach(target woodcode WoodCodeApp)
-    install(TARGETS ${target} RUNTIME)
-    target_link_libraries(${target} PRIVATE woodcode_lib)
-    target_link_options(${target} PRIVATE)
+  install(TARGETS ${target} RUNTIME)
+  target_link_libraries(${target} PRIVATE woodcode_lib)
+  target_link_options(${target} PRIVATE)
 endforeach()
 
 # Get help files
@@ -110,29 +116,27 @@ install(FILES ${HELP_FILES} DESTINATION help)
 
 # Choose behavior based on build type
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "Creating links for help files (Debug mode)")
+  message(STATUS "Creating links for help files (Debug mode)")
 
-    foreach(help_file ${HELP_FILES})
-        get_filename_component(filename ${help_file} NAME)
-        set(dest "${CMAKE_BINARY_DIR}/help/${filename}")
-        file(CREATE_LINK ${help_file} ${dest})
-    endforeach()
+  foreach(help_file ${HELP_FILES})
+    get_filename_component(filename ${help_file} NAME)
+    set(DEST_FILE "${CMAKE_BINARY_DIR}/help/${filename}")
+    file(CREATE_LINK ${help_file} ${DEST_FILE})
+  endforeach()
 else()
-    message(STATUS "Copying help files (Non-Debug mode)")
+  message(STATUS "Copying help files (Non-Debug mode)")
 
-    foreach(help_file ${HELP_FILES})
-        get_filename_component(filename ${help_file} NAME)
-        configure_file(${help_file}
-            "${CMAKE_BINARY_DIR}/help/${filename}"
-            COPYONLY)
-    endforeach()
+  foreach(help_file ${HELP_FILES})
+    get_filename_component(filename ${help_file} NAME)
+    configure_file(${help_file} "${CMAKE_BINARY_DIR}/help/${filename}" COPYONLY)
+  endforeach()
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    enable_testing()
+  enable_testing()
 
-    add_executable(WoodCodeTests tests/tests.cpp)
-    target_link_libraries(WoodCodeTests PRIVATE woodcode_lib)
+  add_executable(WoodCodeTests tests/tests.cpp)
+  target_link_libraries(WoodCodeTests PRIVATE woodcode_lib)
 
-    add_test(NAME WoodCodeTests COMMAND WoodCodeTests)
+  add_test(NAME WoodCodeTests COMMAND WoodCodeTests)
 endif()

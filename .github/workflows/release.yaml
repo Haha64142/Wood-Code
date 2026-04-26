@@ -49,6 +49,7 @@ jobs:
             Changes in this release:
             - Fix a few minor issues
             - Update some dev tools
+            - Update release file naming
 
             For protocol doc and more info, see the main [README](https://github.com/Haha64142/Wood-Code/blob/main/README.md) for details.
 

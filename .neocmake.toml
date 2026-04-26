@@ -1,0 +1,2 @@
+enable_external_cmake_lint = true
+line_words_max = 100

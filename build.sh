@@ -53,7 +53,6 @@ while [ $# -gt 0 ]; do
         ;;
     "--help" | "-h")
         show_help
-        exit 0
         ;;
     "--reset" | "-r")
         echo "Deleting build directory..."
@@ -91,12 +90,10 @@ while [ $# -gt 0 ]; do
             exit 1
             ;;
         esac
-        MSVC=1
         shift 2
         ;;
     "--msvc-legacy" | "-l")
         GENERATOR="Visual Studio 16 2019"
-        MSVC=1
         MSVC_LEGACY=1
         shift
         ;;
