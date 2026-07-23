@@ -6,7 +6,7 @@
 
 WoodCode is a custom, date-based encoding system for obfuscating strings. It supports letters, numbers, and select special characters, with output that varies based on the current date. The system is designed to be compact, and extensible.
 
-See the full protocol specification for details:  
+See the full protocol specification for details:
 [WoodCode Protocol (Google Docs)](https://docs.google.com/document/d/1UjjNRBvrJHCDIoAVRDnQhwWGcTcVQZk7F2mc4qcpg7Y/edit?usp=sharing)
 
 ---
